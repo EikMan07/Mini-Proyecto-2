@@ -8,6 +8,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 ## [Unreleased]
 
 ### Added
+- **frontend:** crea portal RRHH
+  Implementa el frontend inicial de Kendall con autenticación demo por rol, portal del colaborador, dashboard exclusivo de RRHH, chat RAG con citas, asistencia, solicitudes, gráficos e historial.\n\nLa integración usa VITE_API_URL cuando existe y mocks locales en caso contrario. Se documentan los comandos de instalación, las rutas principales y las consideraciones de seguridad para la sesión local y la autorización del backend.
+
 
 ### Fixed
 

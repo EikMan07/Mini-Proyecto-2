@@ -1,0 +1,8 @@
+import { useState } from 'react';
+import { api } from '../../services/api';
+
+export default function LeaveRequestModal({ onClose, onCreated }) {
+  const [type, setType] = useState('Vacaciones'); const [dates, setDates] = useState(''); const [reason, setReason] = useState(''); const [isSubmitting, setIsSubmitting] = useState(false);
+  const submit = async (event) => { event.preventDefault(); setIsSubmitting(true); const request = await api.submitRequest({ type, dates, reason }); onCreated(request); setIsSubmitting(false); };
+  return <div className="modal-backdrop" role="presentation"><div className="modal" role="dialog" aria-modal="true" aria-labelledby="request-title"><button className="close-button" onClick={onClose} aria-label="Cerrar">×</button><p className="eyebrow">Nueva solicitud</p><h2 id="request-title">Pide tiempo para ti</h2><p className="modal-intro">Tu solicitud llegará a la bandeja de RRHH para revisión.</p><form onSubmit={submit}><label>Tipo<select value={type} onChange={(event) => setType(event.target.value)}><option>Vacaciones</option><option>Permiso personal</option><option>Permiso de estudio</option></select></label><label>Fechas<input required value={dates} onChange={(event) => setDates(event.target.value)} placeholder="Ej. 18–20 julio 2025" /></label><label>Nota para RRHH<textarea value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Agrega contexto (opcional)" rows="3" /></label><button className="button primary full-width" disabled={isSubmitting}>{isSubmitting ? 'Enviando…' : 'Enviar solicitud'}<span>↗</span></button></form></div></div>;
+}

@@ -1,0 +1,1 @@
+export default function KpiCard({ label, value, detail, trend, tone = 'neutral' }) { return <article className={`kpi-card ${tone}`}><p>{label}</p><strong>{value}</strong><span>{detail}</span><small>{trend}</small></article>; }
