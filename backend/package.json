@@ -1,0 +1,42 @@
+{
+  "name": "mini-proyecto-2-backend",
+  "version": "1.0.0",
+  "description": "Backend Node.js + Express + Sequelize v6 + PostgreSQL para el Portal de Consulta de Politicas de RRHH con RAG Multiagente",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "seed": "npx sequelize-cli db:seed:all",
+    "eval:45": "node scripts/evaluar_banco_45.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.8.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "googleapis": "^144.0.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mammoth": "^1.8.0",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.3",
+    "pdf-parse": "^1.1.1",
+    "pg": "^8.13.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.5",
+    "xlsx": "^0.18.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "docx": "^9.15.4",
+    "nodemon": "^3.1.9",
+    "pdfkit": "^0.20.2",
+    "sequelize-cli": "^6.6.2"
+  }
+}

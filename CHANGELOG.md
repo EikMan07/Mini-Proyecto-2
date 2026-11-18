@@ -49,6 +49,14 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 - **frontend:** mejora layout animations
   Añade LayoutGroup, layoutId y springs coordinados al dashboard Kendall, junto con mejoras visuales premium, dark mode y microinteracciones.
 
+- **backend:** implementa API RRHH con RAG Gemini
+  Implementa de principio a fin el backend del Portal de Consulta de Politicas de RRHH con RAG Multiagente para TicoSoft S.A. en backend/ junto con las 5 politicas laborales de Costa Rica en documentos_drive/eiker/.
+
+  Cambios principales:
+  - Esquema PostgreSQL en 3FN via migraciones reversibles (departamentos, colaboradores, saldos_vacaciones, solicitudes, incapacidades, asistencias, movimientos_personal, fragmentos_documento, consultas_chat, reportes_diarios, drive_sync_state y tickets_escalamiento) con seeder de 250 colaboradores.
+  - Autenticacion segura con bcryptjs, JWT en cookie HttpOnly con expiracion deslizante (25m), defensa anti-CSRF HMAC en capas, CORS con credenciales, validacion Zod y manejo centralizado de errores (AppError).
+  - Ingesta documental multi-formato (PDF, DOCX, XLSX, MD, Google Docs/Sheets) desde Google Drive API (changes.list) y carpeta local con Gemini Embeddings de 768 dimensiones y cron diario (06:45).
+  - Sistema de 5 agentes (Orquestador, Politicas RAG, Datos Operativos, Analista Diario con cron 07:00 y validador numerico, y Validador con tickets de escalamiento), endpoints REST y evaluador de 45 preguntas (93.33% aciertos, 0% fugas).
 - **frontend:** crea portal RRHH
   Implementa el frontend inicial de Kendall con autenticación demo por rol, portal del colaborador, dashboard exclusivo de RRHH, chat RAG con citas, asistencia, solicitudes, gráficos e historial.\n\nLa integración usa VITE_API_URL cuando existe y mocks locales en caso contrario. Se documentan los comandos de instalación, las rutas principales y las consideraciones de seguridad para la sesión local y la autorización del backend.
 

@@ -1,0 +1,6 @@
+.env
+node_modules/
+service-account.json
+credenciales/
+credenciales/*.json
+uploads/
