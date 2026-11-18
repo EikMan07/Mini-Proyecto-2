@@ -10,18 +10,15 @@ export default function AppShell({ children, eyebrow, title, subtitle, actions }
   const { user, signOut } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('kendall-sidebar') === 'collapsed');
-  const [isSigningOut, setIsSigningOut] = useState(false);
   const navigate = useNavigate();
   const isHr = user?.role === 'rrhh';
   const handleSignOut = () => {
-    if (isSigningOut) return;
-    setIsSigningOut(true);
-    window.setTimeout(() => { signOut(); navigate('/login', { replace: true }); }, 180);
+    signOut();
+    navigate('/login', { replace: true });
   };
   const toggleSidebar = () => setIsCollapsed((current) => { const next = !current; localStorage.setItem('kendall-sidebar', next ? 'collapsed' : 'open'); return next; });
 
   return <div className={`app-shell ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
-    <AnimatePresence>{isSigningOut && <motion.div className="logout-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} role="status" aria-live="polite"><span className="brand-mark"><Sparkles size={16} /></span><strong>Cerrando sesión…</strong></motion.div>}</AnimatePresence>
     <motion.aside layout className="side-rail" initial={{ x: -24, opacity: 0 }} animate={{ x: 0, opacity: 1, width: isCollapsed ? 84 : 232 }} transition={spring}>
       <motion.div layout className="brand-lockup"><span className="brand-mark"><Sparkles size={16} /></span><AnimatePresence mode="wait">{!isCollapsed && <motion.span layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: .18 }}><strong>Kendall</strong><small>People operations</small></motion.span>}</AnimatePresence><motion.button className="rail-toggle" onClick={toggleSidebar} aria-label={isCollapsed ? 'Expandir navegación' : 'Colapsar navegación'} whileTap={{ scale: .88 }} whileHover={{ rotate: isCollapsed ? 0 : -8 }}>{isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}</motion.button></motion.div>
       <motion.nav className="main-nav" aria-label="Navegación principal" variants={dashboardVariants} initial="initial" animate="animate">

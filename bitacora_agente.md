@@ -3,6 +3,28 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #15]
+**IndicaciÃ³n / Tarea:**
+> Corregir el parpadeo que aparece al cerrar sesiÃ³n.
+
+### 1. Archivos Afectados
+- `frontend/src/App.jsx`
+- `frontend/src/context/AuthContext.jsx`
+- `frontend/src/components/AppShell/AppShell.jsx`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se moviÃ³ el overlay de cierre de sesiÃ³n al nivel global de la aplicaciÃ³n.
+- Se sincronizÃ³ el estado de cierre con el contexto de autenticaciÃ³n.
+- La sesiÃ³n se elimina y la ruta cambia a `/login` manteniendo la cobertura visual durante la transiciÃ³n.
+- Se eliminaron estados duplicados del `AppShell`.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se corrigiÃ³ la causa del flash: el overlay ya no se desmonta junto con el dashboard protegido, sino que permanece activo durante todo el cierre de sesiÃ³n y la navegaciÃ³n al login.
+
+---
+
 ## [Entrada #14]
 **IndicaciÃ³n / Tarea:**
 > Revisar la grabaciÃ³n y corregir la vista responsive de la interfaz.

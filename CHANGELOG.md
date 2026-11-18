@@ -33,6 +33,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Fixed
+- **auth:** elimina flash al cerrar sesión
+  Mantiene el overlay global durante el cierre de sesión y la navegación al login.
+
 - **frontend:** corrige responsive móvil
   Ajusta sidebar móvil, navegación compacta y composición de la tarjeta de jornada a partir de la grabación.
 
