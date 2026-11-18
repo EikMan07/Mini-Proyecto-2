@@ -1,0 +1,13 @@
+# Archivos locales de indicaciones y bitácora del agente
+prompts_indicaciones.md
+bitacora_agente.md
+
+# Entorno, dependencias y credenciales
+.env
+node_modules/
+service-account.json
+credenciales/
+backend/credenciales/
+credenciales/*.json
+backend/credenciales/*.json
+uploads/
