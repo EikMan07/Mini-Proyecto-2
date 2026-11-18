@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **frontend:** completa reportes y chat
+  Amplía el chat con respuestas personales y mixtas, y agrega el detalle operativo completo del reporte diario de RRHH.
+
 - **frontend:** renueva sistema de animaciones
   Añade transiciones de rutas, entradas escalonadas, springs de navegación, microinteracciones y motion coordinado para dashboards.
 

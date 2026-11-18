@@ -3,6 +3,31 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #16]
+**IndicaciÃ³n / Tarea:**
+> Entregar el frontend completo de Kendall People Operations tomando el alcance del brief adjunto.
+
+### 1. Archivos Afectados
+- `frontend/src/components/ReportDetails/ReportDetails.jsx` (Creado)
+- `frontend/src/components/ChatBox/ChatBox.jsx` (Modificado)
+- `frontend/src/pages/HrDashboardPage/HrDashboardPage.jsx` (Modificado)
+- `frontend/src/mocks/apiMock.js` (Modificado)
+- `frontend/src/index.css` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se ampliÃ³ el chat para representar datos personales, respuestas mixtas, polÃ­ticas asociadas y consultas fuera de alcance.
+- Se agregaron respuestas demo para saldo de vacaciones, prÃ³ximo pago, permisos y consultas fuera del alcance.
+- Se completÃ³ el dashboard de RRHH con un bloque operativo para ausencias, incapacidades, movimientos, vacaciones acumuladas, uso del chatbot y preguntas sin respuesta.
+- Se agregaron estados visuales, desglose por categorÃ­a y tratamiento de datos no disponibles.
+- Se mantuvo la composiciÃ³n responsive para escritorio, tablet y mÃ³vil.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se completÃ³ el alcance funcional pendiente del frontend: el colaborador puede ver respuestas de chat diferenciadas y RRHH puede consultar los ocho bloques definidos para el reporte diario, con una presentaciÃ³n responsive y consistente con el sistema visual existente.
+
+---
+
 ## [Entrada #15]
 **IndicaciÃ³n / Tarea:**
 > Corregir el parpadeo que aparece al cerrar sesiÃ³n.

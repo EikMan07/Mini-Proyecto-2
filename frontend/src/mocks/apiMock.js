@@ -41,6 +41,18 @@ export const apiMock = {
   async askChat(question) {
     await wait(900);
     const normalized = question.toLowerCase();
+    if ((normalized.includes('cuántos') && normalized.includes('vacaciones')) || normalized.includes('saldo')) {
+      return { answer: 'Tienes 14.5 días disponibles para solicitar durante el periodo 2025.', personal: { label: 'Tu saldo actual', value: '14.5 días', detail: 'Periodo vigente 2025' }, policyText: 'Las solicitudes deben enviarse con al menos 3 días de anticipación.', agentUsed: 'Employee Data + HR Policy Agent', citations: [citations[0]], escalated: false, latencyMs: 382 };
+    }
+    if (normalized.includes('pago') || normalized.includes('próximo')) {
+      return { answer: 'Tu próximo pago está programado para el viernes 27 de junio de 2025.', personal: { label: 'Próximo pago', value: '27 jun 2025', detail: 'Nómina mensual' }, agentUsed: 'Employee Data Agent', citations: [], escalated: false, latencyMs: 341 };
+    }
+    if (normalized.includes('permiso') || normalized.includes('ausencia')) {
+      return { answer: 'Puedes registrar la solicitud desde Mis solicitudes y adjuntar el comprobante cuando corresponda.', policyText: 'Los permisos deben contar con aprobación de tu jefatura antes de ausentarte.', agentUsed: 'HR Policy Agent', citations: [citations[0]], escalated: false, latencyMs: 501 };
+    }
+    if (normalized.includes('qué haces') || normalized.includes('quién eres') || normalized.includes('clima')) {
+      return { answer: 'Puedo ayudarte con políticas, vacaciones, permisos, asistencia y el estado de tus solicitudes. Para otros temas, contacta a RRHH.', outOfScope: true, agentUsed: 'Scope Guard', citations: [], escalated: false, latencyMs: 210 };
+    }
     if (normalized.includes('bono') || normalized.includes('mascota')) {
       return { answer: 'No encontré una política vigente que respalde un bono por mascotas.', agentUsed: 'Policy Retriever', citations: [], escalated: true, latencyMs: 812 };
     }
@@ -75,6 +87,14 @@ export const apiMock = {
         { id: 'REQ-276', person: 'Sofía Castro', type: 'Permiso personal', department: 'Producto', age: '2 días', overdue: false },
       ], unresolved: ['¿Existe un bono por mascotas?', '¿Puedo conocer el salario de otra persona?', '¿Cómo se solicita una excepción de horario?'],
       history: ['2025-06-13', '2025-06-12', '2025-06-11', '2025-06-10'],
+      details: {
+        absences: { total: 7, detail: '3.1% de la plantilla', breakdown: { Vacaciones: 3, Permisos: 2, Incapacidades: 2 } },
+        medical: { total: 4, detail: '12 días acumulados durante el mes', status: '2 requieren seguimiento', tone: 'warning' },
+        movements: { total: 6, detail: '4 ingresos · 2 salidas este mes', breakdown: { 'Tasa de rotación': '2.8%' } },
+        vacationRisk: { total: 18, detail: 'colaboradores con más de 20 días acumulados', status: 'Requiere seguimiento', tone: 'critical' },
+        chatUsage: { total: '86%', detail: '428 consultas ayer · latencia promedio 624 ms', breakdown: { 'Sin escalamiento': '86%', Escaladas: '14%' } },
+        unresolvedCount: 3,
+      },
     };
   },
 };
