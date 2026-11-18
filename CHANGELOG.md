@@ -60,6 +60,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 ### Security
 
 ### Maintenance
+- **frontend:** limpia encabezado del portal
+  Retira el subtítulo del portal del colaborador y evita reservar espacio cuando no existe.
+
 - **frontend:** retira icono lateral
   Elimina el icono coral del encabezado de la barra lateral y conserva la navegación textual.
 

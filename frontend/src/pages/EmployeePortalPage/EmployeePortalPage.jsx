@@ -33,7 +33,6 @@ export default function EmployeePortalPage() {
     <AppShell
       eyebrow="Portal del colaborador"
       title="Tu espacio de trabajo"
-      subtitle="Todo lo que necesitas para moverte con claridad dentro de Kendall."
       actions={<button className="button secondary" onClick={() => setIsModalOpen(true)}>Nueva solicitud <span>↗</span></button>}
     >
       <LayoutGroup id="employee-dashboard">

@@ -3,6 +3,26 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #19]
+**IndicaciÃ³n / Tarea:**
+> Quitar el texto descriptivo visible debajo del encabezado del portal.
+
+### 1. Archivos Afectados
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx` (Modificado)
+- `frontend/src/components/AppShell/AppShell.jsx` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se retirÃ³ el subtÃ­tulo del portal del colaborador.
+- Se hizo condicional el elemento visual del subtÃ­tulo para no reservar espacio cuando no existe contenido.
+- Se mantuvieron los subtÃ­tulos de las demÃ¡s pantallas que sÃ­ los utilizan.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se eliminÃ³ completamente el texto mostrado debajo de "Tu espacio de trabajo", incluyendo el espacio vacÃ­o que quedaba en el encabezado.
+
+---
+
 ## [Entrada #18]
 **IndicaciÃ³n / Tarea:**
 > Permitir escoger diferentes colores en la pÃ¡gina.
