@@ -39,6 +39,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 ### Security
 
 ### Maintenance
+- **frontend:** rediseña toda la interfaz
+  Aplica una dirección editorial enterprise completa a login, portal, RRHH, navegación, cards, chat, formularios y responsive.
+
 - **repo:** añade skills y docs iniciales
   Inicializa la estructura base del repositorio Mini-Proyecto-2 con las skills de automatizacion del agente y la documentacion inicial del plan de frontend.
   

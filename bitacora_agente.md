@@ -3,6 +3,28 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #12]
+**IndicaciÃ³n / Tarea:**
+> Cambiar todo el diseÃ±o visual de la pÃ¡gina porque la iteraciÃ³n anterior no era suficientemente visible.
+
+### 1. Archivos Afectados
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se reemplazÃ³ la capa visual anterior por una direcciÃ³n editorial enterprise mÃ¡s contundente.
+- Se cambiÃ³ el fondo general a marfil y se reforzÃ³ el navy profundo como estructura de navegaciÃ³n.
+- Se rediseÃ±aron paneles, tarjetas, KPI, balance de vacaciones, chat, formularios y modal.
+- Se ampliÃ³ la jerarquÃ­a tipogrÃ¡fica y se redujo la dependencia de bordes y lÃ­neas.
+- Se creÃ³ una composiciÃ³n responsive distinta para mÃ³vil sin eliminar el contenido principal.
+- Se conservÃ³ dark mode y `prefers-reduced-motion`.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se aplicÃ³ un cambio visual integral y claramente perceptible sobre todas las pantallas existentes, manteniendo los flujos funcionales y la compatibilidad Vite + React.
+
+---
+
 ## [Entrada #11]
 **IndicaciÃ³n / Tarea:**
 > Corregir la hora de entrada mostrada como registrada cuando el usuario no la ha marcado.
