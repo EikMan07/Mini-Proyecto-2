@@ -51,6 +51,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Fixed
+- **register:** separa nombres y apellidos
+  Distribuye automáticamente los apellidos consultados en el campo Apellidos del registro.
+
 - **auth:** elimina flash al cerrar sesión
   Mantiene el overlay global durante el cierre de sesión y la navegación al login.
 

@@ -3,6 +3,25 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #29]
+**IndicaciÃ³n / Tarea:**
+> Colocar los apellidos directamente en el apartado Apellidos al verificar la cÃ©dula.
+
+### 1. Archivos Afectados
+- `frontend/src/pages/RegisterPage/RegisterPage.jsx` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se agregÃ³ una funciÃ³n para separar nombres y dos apellidos desde el nombre consultado.
+- La verificaciÃ³n de cÃ©dula ahora rellena `Nombre` y `Apellidos` por separado.
+- Se mantiene la posibilidad de editar ambos campos antes de enviar el formulario.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Los apellidos ahora se colocan automÃ¡ticamente en el campo Apellidos; por ejemplo, `KENDALL MAURICIO SALAZAR VARGAS` queda separado en nombres y apellidos.
+
+---
+
 ## [Entrada #28]
 **IndicaciÃ³n / Tarea:**
 > Ampliar la tarjeta de jornada para aprovechar el espacio en blanco inferior.
