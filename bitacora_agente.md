@@ -3,6 +3,25 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #17]
+**IndicaciÃ³n / Tarea:**
+> Quitar el Ã­cono coral visible en la barra lateral.
+
+### 1. Archivos Afectados
+- `frontend/src/components/AppShell/AppShell.jsx` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se eliminÃ³ el `brand-mark` del encabezado de la barra lateral.
+- Se conservÃ³ el control de colapsar, la marca textual y la navegaciÃ³n.
+- Se eliminÃ³ el import de icono que quedÃ³ sin uso.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se quitÃ³ el Ã­cono coral mostrado en la captura de la barra lateral sin afectar el resto de la interfaz.
+
+---
+
 ## [Entrada #16]
 **IndicaciÃ³n / Tarea:**
 > Entregar el frontend completo de Kendall People Operations tomando el alcance del brief adjunto.

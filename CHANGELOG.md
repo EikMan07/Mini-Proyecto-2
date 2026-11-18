@@ -57,6 +57,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 ### Security
 
 ### Maintenance
+- **frontend:** retira icono lateral
+  Elimina el icono coral del encabezado de la barra lateral y conserva la navegación textual.
+
 - **frontend:** rediseña toda la interfaz
   Aplica una dirección editorial enterprise completa a login, portal, RRHH, navegación, cards, chat, formularios y responsive.
 

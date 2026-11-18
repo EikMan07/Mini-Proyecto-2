@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Moon, Sun, Sparkles, LogOut, MessageCircle, LayoutDashboard, ClipboardList } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Moon, Sun, LogOut, MessageCircle, LayoutDashboard, ClipboardList } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { dashboardItemVariants, dashboardVariants, spring } from '../../lib/motion';
@@ -20,7 +20,7 @@ export default function AppShell({ children, eyebrow, title, subtitle, actions }
 
   return <div className={`app-shell ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
     <motion.aside layout className="side-rail" initial={{ x: -24, opacity: 0 }} animate={{ x: 0, opacity: 1, width: isCollapsed ? 84 : 232 }} transition={spring}>
-      <motion.div layout className="brand-lockup"><span className="brand-mark"><Sparkles size={16} /></span><AnimatePresence mode="wait">{!isCollapsed && <motion.span layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: .18 }}><strong>Kendall</strong><small>People operations</small></motion.span>}</AnimatePresence><motion.button className="rail-toggle" onClick={toggleSidebar} aria-label={isCollapsed ? 'Expandir navegación' : 'Colapsar navegación'} whileTap={{ scale: .88 }} whileHover={{ rotate: isCollapsed ? 0 : -8 }}>{isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}</motion.button></motion.div>
+      <motion.div layout className="brand-lockup"><AnimatePresence mode="wait">{!isCollapsed && <motion.span layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: .18 }}><strong>Kendall</strong><small>People operations</small></motion.span>}</AnimatePresence><motion.button className="rail-toggle" onClick={toggleSidebar} aria-label={isCollapsed ? 'Expandir navegación' : 'Colapsar navegación'} whileTap={{ scale: .88 }} whileHover={{ rotate: isCollapsed ? 0 : -8 }}>{isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}</motion.button></motion.div>
       <motion.nav className="main-nav" aria-label="Navegación principal" variants={dashboardVariants} initial="initial" animate="animate">
         <motion.div variants={dashboardItemVariants}><NavLink title={isCollapsed ? (isHr ? 'Resumen diario' : 'Mi espacio') : undefined} to={isHr ? '/rrhh/dashboard' : '/portal'} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><LayoutDashboard size={17} />{!isCollapsed && (isHr ? 'Resumen diario' : 'Mi espacio')}</NavLink></motion.div>
         {!isCollapsed && <motion.span className="nav-label" variants={dashboardItemVariants}>Atajos</motion.span>}
