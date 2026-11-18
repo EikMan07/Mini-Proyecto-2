@@ -180,8 +180,10 @@ body { background: var(--soft); color: var(--ink); }
 .request-list .panel-heading { padding-bottom: 14px; }
 .tip-card { padding: 24px; border-radius: var(--radius-card); background: #e6ddd0; }
 .attendance-card { padding-bottom: 5px; }
-.attendance-main { padding: 8px 32px 30px; }
-.attendance-time { font-size: 3.6rem; }
+.attendance-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; padding: 8px 32px 30px; }
+.attendance-time { min-width: 0; white-space: nowrap; font-size: clamp(2.2rem, 4.2vw, 3.6rem); line-height: .95; }
+.attendance-main > div:last-child { min-width: 154px; }
+.attendance-main .button { width: 100%; }
 .medical-row { padding: 20px 32px 26px; }
 .upload-button { background: transparent; border-color: var(--coral); color: var(--coral); }
 .kpi-grid { gap: 16px; }
@@ -212,6 +214,15 @@ html[data-theme='dark'] { --soft: #08131f; --surface: #102131; --line: #263b4d; 
 html[data-theme='dark'] .chat-composer, html[data-theme='dark'] .role-switch button { background: #172d3f; }
 html[data-theme='dark'] .message-bubble { background: #193143; }
 html[data-theme='dark'] .tip-card { background: #2c3b3a; }
+@media (max-width: 1100px) {
+  .app-shell, .app-shell.sidebar-collapsed { grid-template-columns: 208px minmax(0, 1fr); }
+  .app-shell.sidebar-collapsed { grid-template-columns: 84px minmax(0, 1fr); }
+  .main-content { padding-inline: 32px; }
+  .portal-grid, .charts-grid, .dashboard-lower { grid-template-columns: 1fr; }
+  .portal-aside { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tip-card { grid-column: span 2; }
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 760px) {
   .app-shell, .app-shell.sidebar-collapsed { grid-template-columns: 1fr; }
   .main-content { padding: 28px 16px 48px; }
@@ -221,7 +232,10 @@ html[data-theme='dark'] .tip-card { background: #2c3b3a; }
   .message-row { max-width: 94%; }
   .balance-card { min-height: 220px; padding: 26px; }
   .balance-card > strong { font-size: 4.4rem; }
-  .attendance-main, .medical-row { padding-inline: 20px; }
+  .attendance-main { grid-template-columns: 1fr; gap: 18px; padding-inline: 20px; }
+  .attendance-main > div:last-child { min-width: 0; width: 100%; }
+  .attendance-time { font-size: clamp(2.5rem, 13vw, 3.6rem); }
+  .medical-row { padding-inline: 20px; }
   .request-item { padding-inline: 20px; }
   .kpi-card { min-height: 145px; padding: 18px; }
   .kpi-card::after { left: 18px; right: 18px; }

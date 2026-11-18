@@ -33,6 +33,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Fixed
+- **frontend:** ajusta responsive de jornada
+  Corrige la composición responsive de asistencia, hora real, botón de entrada, sidebar, grids y tarjetas para tablet y móvil.
+
 - **frontend:** corrige hora de asistencia demo
   Evita mostrar una hora fija como entrada registrada; el mock usa la hora actual solo después de marcar asistencia.
 

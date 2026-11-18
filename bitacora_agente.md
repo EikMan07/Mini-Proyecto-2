@@ -3,6 +3,28 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #14]
+**IndicaciÃ³n / Tarea:**
+> Acomodar toda la interfaz para que sea responsive y se visualice correctamente en diferentes tamaÃ±os.
+
+### 1. Archivos Afectados
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se cambiÃ³ la zona de asistencia a un grid responsive con hora y acciÃ³n independientes.
+- Se evitÃ³ que la hora real se parta en varias lÃ­neas en escritorio.
+- Se estabilizÃ³ el ancho del botÃ³n `Marcar entrada`.
+- Se apilan portal, grÃ¡ficos y tablero antes de que la vista de tablet quede comprimida.
+- Se ajustaron sidebar colapsada, KPI, cards, modal y acciones para anchos reducidos.
+- Se conservÃ³ el layout mÃ³vil con botones de ancho completo y espaciado tÃ¡ctil.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+La interfaz fue ajustada a partir de la captura: la tarjeta de jornada ya no corta la hora ni comprime el botÃ³n, y los layouts cambian de columnas a bloques apilados en tablet y mÃ³vil.
+
+---
+
 ## [Entrada #13]
 **IndicaciÃ³n / Tarea:**
 > Cambiar completamente la animaciÃ³n y elevar el sistema de movimiento de toda la interfaz.
