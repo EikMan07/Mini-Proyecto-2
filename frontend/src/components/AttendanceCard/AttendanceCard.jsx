@@ -1,11 +1,21 @@
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, Clock3, FileUp, LoaderCircle, UploadCloud } from 'lucide-react';
 import { api } from '../../services/api';
 import StatusBadge from '../StatusBadge/StatusBadge';
 
 export default function AttendanceCard({ attendance, onCheckedIn }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receiptName, setReceiptName] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
   const checkedIn = attendance?.status === 'registrada';
   const handleCheckIn = async () => { setIsSubmitting(true); const result = await api.checkIn(); onCheckedIn(result); setIsSubmitting(false); };
-  return <section className="panel attendance-card"><div className="panel-heading"><div><p className="eyebrow">Hoy · viernes 13 de junio</p><h2>Tu jornada empieza aquí</h2></div><StatusBadge tone={checkedIn ? 'success' : 'warning'}>{checkedIn ? 'Entrada registrada' : 'Pendiente'}</StatusBadge></div><div className="attendance-main"><div className="attendance-time">{checkedIn ? attendance.checkedAt : '—:—'}<small>{checkedIn ? 'Marca confirmada' : 'Todavía no has marcado'}</small></div><button className="button primary" onClick={handleCheckIn} disabled={checkedIn || isSubmitting}>{isSubmitting ? 'Guardando…' : checkedIn ? 'Asistencia marcada' : 'Hoy entré a trabajar'}<span>→</span></button></div><div className="attendance-divider" /><div className="medical-row"><div><strong>¿Faltaste por una razón médica?</strong><p>Sube el comprobante de clínica o CCSS para que RRHH lo revise.</p></div><label className="upload-button">{receiptName ? `✓ ${receiptName}` : 'Adjuntar comprobante'}<input type="file" accept="image/*,.pdf" onChange={(event) => setReceiptName(event.target.files?.[0]?.name || '')} /></label></div></section>;
+  const handleFile = (file) => setReceiptName(file?.name || '');
+  return <motion.section className="panel attendance-card" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .12 }}>
+    <div className="panel-heading"><div><p className="eyebrow"><Clock3 size={13} /> Hoy · viernes 13 de junio</p><h2>Tu jornada empieza aquí</h2></div><StatusBadge tone={checkedIn ? 'success' : 'warning'}>{checkedIn ? <><Check size={12} /> Entrada registrada</> : 'Pendiente'}</StatusBadge></div>
+    <div className="attendance-main"><motion.div className="attendance-time" animate={checkedIn ? { scale: [1, 1.08, 1] } : {}}>{checkedIn ? attendance.checkedAt : '—:—'}<small>{checkedIn ? 'Marca confirmada' : 'Todavía no has marcado'}</small></motion.div><motion.button className="button primary" onClick={handleCheckIn} disabled={checkedIn || isSubmitting} whileTap={{ scale: .97 }}>{isSubmitting ? <><LoaderCircle className="spin" size={16} /> Guardando…</> : checkedIn ? <><Check size={16} /> Asistencia marcada</> : <><Clock3 size={16} /> Hoy entré a trabajar</>}</motion.button></div>
+    <div className="attendance-divider" />
+    <div className="medical-row"><div><strong>¿Faltaste por una razón médica?</strong><p>Sube el comprobante de clínica o CCSS para que RRHH lo revise.</p></div><label className={`upload-button ${isDragging ? 'dragging' : ''}`} onDragEnter={() => setIsDragging(true)} onDragLeave={() => setIsDragging(false)} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); setIsDragging(false); handleFile(event.dataTransfer.files?.[0]); }}>{receiptName ? <><Check size={14} /> {receiptName}</> : <><UploadCloud size={16} /> Arrastra o adjunta PDF</>}<input type="file" accept="image/*,.pdf" onChange={(event) => handleFile(event.target.files?.[0])} /></label></div>
+    <AnimatePresence>{receiptName && <motion.div className="upload-success" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}><FileUp size={14} /> Comprobante listo para revisión de RRHH</motion.div>}</AnimatePresence>
+  </motion.section>;
 }
