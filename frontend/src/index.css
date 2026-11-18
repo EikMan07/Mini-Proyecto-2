@@ -293,3 +293,10 @@ html[data-theme='dark'] .tip-card { background: #2c3b3a; }
 .attendance-card { min-height: 470px; display: flex; flex-direction: column; }.attendance-card .attendance-main { flex: 1; align-content: center; }.attendance-card .medical-row { margin-top: auto; }
 @media (max-width: 1100px) { .attendance-card { min-height: 420px; } }
 @media (max-width: 760px) { .attendance-card { min-height: auto; display: block; }.attendance-card .attendance-main { flex: none; }.attendance-card .medical-row { margin-top: 0; } }
+.input-with-action button { transition: background .2s, color .2s, transform .2s; }
+.input-with-action button:first-of-type { border-radius: 0; }
+.input-with-action button:last-of-type { border-radius: 0 10px 10px 0; }
+.input-with-action button:hover:not(:disabled) { background: var(--soft); transform: translateY(-1px); }
+.input-with-action .locate-button { border-color: var(--coral); background: var(--coral); color: #fff; }
+.input-with-action .locate-button:hover:not(:disabled) { background: color-mix(in srgb, var(--coral) 84%, #000); color: #fff; }
+.input-with-action button:disabled { cursor: wait; opacity: .7; }

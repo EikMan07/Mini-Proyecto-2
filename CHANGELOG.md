@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **register:** activa ubicacion exacta
+  Añade acción de geolocalización y relleno de dirección en el registro.
+
 - **frontend:** agrupa controles accesibles
   Agrupa estado, colores de acento y modo oscuro dentro de un panel desplegable de accesibilidad.
 

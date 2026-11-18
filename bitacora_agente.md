@@ -3,6 +3,28 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #30]
+**IndicaciÃ³n / Tarea:**
+> Esa parte deje activar la ubicaciÃ³n exacta.
+
+### 1. Archivos Afectados
+- `frontend/src/pages/RegisterPage/RegisterPage.jsx`
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se agregÃ³ un botÃ³n explÃ­cito para solicitar la ubicaciÃ³n exacta mediante la API de geolocalizaciÃ³n del navegador.
+- Se integrÃ³ geocodificaciÃ³n inversa para rellenar la direcciÃ³n con localidad, ciudad y provincia; si no hay resultado, se muestran coordenadas como respaldo.
+- El botÃ³n usa `type="button"`, por lo que ya no activa la validaciÃ³n ni el envÃ­o del formulario al hacer clic.
+- Se aÃ±adieron estado de carga, mensaje de error para permisos bloqueados y opciÃ³n de continuar escribiendo la direcciÃ³n manualmente.
+- Se ajustaron los estilos responsive para diferenciar el botÃ³n de ubicaciÃ³n del buscador de lugares.
+- VerificaciÃ³n completada: `npm test -- --passWithNoTests` y `npm run build` exitosos.
+
+### 3. Respuesta Completa del Agente
+La pantalla de registro ahora permite activar la ubicaciÃ³n exacta desde el botÃ³n naranja de la secciÃ³n “DirecciÃ³n exacta”. El navegador solicitarÃ¡ permiso, consultarÃ¡ la ubicaciÃ³n y rellenarÃ¡ el campo; la persona usuaria puede corregir o completar las seÃ±as manualmente.
+
+---
+
 ## [Entrada #29]
 **IndicaciÃ³n / Tarea:**
 > Colocar los apellidos directamente en el apartado Apellidos al verificar la cÃ©dula.
