@@ -3,6 +3,26 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #25]
+**IndicaciÃ³n / Tarea:**
+> Acomodar el apartado de derechos y deberes para aprovechar mejor el espacio.
+
+### 1. Archivos Afectados
+- `frontend/src/index.css` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- El Centro laboral ahora ocupa todo el ancho disponible debajo del portal.
+- Se eliminÃ³ el espacio vacÃ­o a la derecha del panel.
+- Los documentos se distribuyen en cuatro columnas en escritorio, dos en tablet y una en mÃ³vil.
+- Se mantuvo el comportamiento responsive y la legibilidad de las tarjetas.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se acomodÃ³ el apartado de derechos y deberes para que aproveche todo el ancho de la pantalla y se vea equilibrado en computadora, tablet y celular.
+
+---
+
 ## [Entrada #24]
 **IndicaciÃ³n / Tarea:**
 > Subir el apartado de feriados de Costa Rica al espacio superior disponible.

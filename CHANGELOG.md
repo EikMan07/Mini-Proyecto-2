@@ -69,6 +69,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 ### Security
 
 ### Maintenance
+- **frontend:** ajusta centro laboral
+  Hace que el centro de derechos y deberes ocupe todo el ancho y distribuye sus documentos responsivamente.
+
 - **frontend:** eleva calendario laboral
   Mueve el calendario de feriados al inicio de la columna derecha y conserva el layout responsive.
 
