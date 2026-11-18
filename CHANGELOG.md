@@ -7,7 +7,18 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 ## [Unreleased]
 
+### Documentation
+- registra sincronización de cambios
+  Registra la preparación y publicación de todos los cambios pendientes en la rama feature-kendall.\n\nLa rama local se verificó contra origin/feature-kendall antes de ejecutar git add, git commit y git push.
+
+- registra entrega frontend
+  Registra en la bitácora la publicación de la primera etapa del portal React en feature-kendall y confirma la sincronización con origin/feature-kendall.
+
+
 ### Added
+- **frontend:** crea portal RRHH
+  Implementa el frontend inicial de Kendall con autenticación demo por rol, portal del colaborador, dashboard exclusivo de RRHH, chat RAG con citas, asistencia, solicitudes, gráficos e historial.\n\nLa integración usa VITE_API_URL cuando existe y mocks locales en caso contrario. Se documentan los comandos de instalación, las rutas principales y las consideraciones de seguridad para la sesión local y la autorización del backend.
+
 
 ### Fixed
 

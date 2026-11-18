@@ -1,0 +1,1 @@
+export default function CitationCard({ citation }) { return <a className="citation-card" href={citation.url} target="_blank" rel="noreferrer"><span className="citation-icon">↗</span><span><strong>{citation.title}</strong><small>{citation.section} · {citation.version}</small></span><span className="citation-arrow">→</span></a>; }

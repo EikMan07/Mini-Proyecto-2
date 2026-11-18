@@ -1,0 +1,1 @@
+export default function SecurityAlert() { return <div className="security-alert" role="alert"><span className="alert-symbol">!</span><div><strong>Consulta protegida</strong><p>Por privacidad, solo puedes consultar tus propios datos y las políticas generales de la organización.</p></div></div>; }

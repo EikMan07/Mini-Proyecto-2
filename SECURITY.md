@@ -13,3 +13,6 @@ Si detectas alguna vulnerabilidad de seguridad en este repositorio, por favor re
 - Utilizar variables de entorno protegidas (.env).
 - Mantener dependencias actualizadas mediante auditorias regulares (`npm audit`).
 - Implementar sanitizacion de entradas y proteccion contra ataques comunes (XSS, SQLi, CSRF).
+- El token y los datos de sesión del demo se guardan en `localStorage` únicamente para facilitar la demostración local; en producción debe usarse el mecanismo seguro definido por el backend, idealmente cookies `HttpOnly` y `SameSite`.
+- Las rutas de RRHH validan el rol en el cliente como control de experiencia; la autorización real debe repetirse en cada endpoint del backend.
+- Los enlaces a Google Drive deben conservar permisos mínimos y no deben incluir tokens ni credenciales en el repositorio.
