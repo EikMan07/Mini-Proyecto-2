@@ -54,6 +54,12 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Fixed
+- **register:** fija botón de verificar
+  Corrige la alineación del botón Verificar cédula cuando aparece el mensaje de identidad consultada.\n\nCambios principales:\n- Se fija la posición superior del contenedor inline-action dentro del campo de cédula.\n- Se mantiene el botón alineado con el input al mostrar la confirmación de identidad.\n- Se actualiza CHANGELOG.md y se registra la acción en la bitácora del agente.
+
+- **register:** fija boton de cedula
+  Mantiene el boton Verificar alineado con el campo aunque aparezca la identidad consultada.
+
 - **register:** separa nombres y apellidos
   Distribuye automáticamente los apellidos consultados en el campo Apellidos del registro.
 

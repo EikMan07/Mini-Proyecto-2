@@ -3,6 +3,24 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #31]
+**IndicaciÃ³n / Tarea:**
+> Corrige el botÃ³n de verificar cÃ©dula porque baja cuando se muestra la identidad consultada.
+
+### 1. Archivos Afectados
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se cambiÃ³ el anclaje del botÃ³n `.inline-action` de `bottom` a una posiciÃ³n superior fija dentro del campo de cÃ©dula.
+- El botÃ³n permanece alineado con el input aunque aparezca el mensaje de identidad verificada debajo.
+- VerificaciÃ³n completada: `npm test -- --passWithNoTests` y `npm run build` exitosos.
+
+### 3. Respuesta Completa del Agente
+El botÃ³n “Verificar” ya no baja cuando la cÃ©dula es validada y aparece el texto de confirmaciÃ³n.
+
+---
+
 ## [Entrada #30]
 **IndicaciÃ³n / Tarea:**
 > Esa parte deje activar la ubicaciÃ³n exacta.

@@ -300,3 +300,4 @@ html[data-theme='dark'] .tip-card { background: #2c3b3a; }
 .input-with-action .locate-button { border-color: var(--coral); background: var(--coral); color: #fff; }
 .input-with-action .locate-button:hover:not(:disabled) { background: color-mix(in srgb, var(--coral) 84%, #000); color: #fff; }
 .input-with-action button:disabled { cursor: wait; opacity: .7; }
+.inline-action { top: 25px; bottom: auto; }
