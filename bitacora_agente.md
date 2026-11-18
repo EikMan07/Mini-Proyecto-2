@@ -3,6 +3,24 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #26]
+**IndicaciÃ³n / Tarea:**
+> Quitar la tarjeta informativa “Una buena pregunta abre una puerta”.
+
+### 1. Archivos Afectados
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se eliminÃ³ la tarjeta informativa del portal del colaborador.
+- Se conservaron el chat, la asistencia, el saldo y las solicitudes.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se quitÃ³ la tarjeta informativa mostrada en la captura sin afectar los demÃ¡s apartados del portal.
+
+---
+
 ## [Entrada #25]
 **IndicaciÃ³n / Tarea:**
 > Acomodar el apartado de derechos y deberes para aprovechar mejor el espacio.

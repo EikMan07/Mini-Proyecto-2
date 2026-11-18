@@ -69,6 +69,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 ### Security
 
 ### Maintenance
+- **frontend:** elimina tarjeta informativa
+  Retira la tarjeta informativa del portal del colaborador y conserva los módulos funcionales.
+
 - **frontend:** ajusta centro laboral
   Hace que el centro de derechos y deberes ocupe todo el ancho y distribuye sus documentos responsivamente.
 

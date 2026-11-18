@@ -77,10 +77,6 @@ export default function EmployeePortalPage() {
               </div>
             </motion.section>
 
-            <motion.section className="tip-card" layout transition={springSoft}>
-              <span>✦</span>
-              <div><strong>Una buena pregunta abre una puerta</strong><p>El asistente responde con políticas vigentes y te muestra la fuente para que puedas leer más.</p></div>
-            </motion.section>
           </motion.aside>
         </motion.div>
       </LayoutGroup>
