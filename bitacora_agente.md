@@ -3,6 +3,57 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #22]
+**IndicaciÃ³n / Tarea:**
+> Permitir marcar la salida despuÃ©s de la entrada y mostrar el dato real en RRHH.
+
+### 1. Archivos Afectados
+- `frontend/src/services/api.js` (Modificado)
+- `frontend/src/mocks/apiMock.js` (Modificado)
+- `frontend/src/components/AttendanceCard/AttendanceCard.jsx` (Modificado)
+- `frontend/src/components/AttendanceMonitor/AttendanceMonitor.jsx` (Creado)
+- `frontend/src/pages/HrDashboardPage/HrDashboardPage.jsx` (Modificado)
+- `frontend/src/index.css` (Modificado)
+- `frontend/src/components/AppShell/AppShell.jsx` (Modificado)
+- `frontend/src/pages/LoginPage/LoginPage.jsx` (Modificado)
+- `frontend/src/pages/RegisterPage/RegisterPage.jsx` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se agregÃ³ `POST /api/attendance/check-out` al contrato del frontend.
+- Se agregÃ³ el flujo de salida con estados de carga, error y jornada cerrada.
+- La demo persiste entrada y salida en `localStorage` para compartir el dato entre el portal y RRHH en el mismo navegador.
+- RRHH muestra colaborador, departamento, hora de entrada y hora de salida.
+- Se actualizÃ³ la marca visible y legal a TicoSoft S.A.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se implementÃ³ el flujo entrada → salida → jornada cerrada. La salida queda disponible despuÃ©s de marcar la entrada y el dashboard administrativo muestra las dos marcas confirmadas.
+
+---
+
+## [Entrada #21]
+**IndicaciÃ³n / Tarea:**
+> La empresa no se llama Kendall; debe mostrarse como TicoSoft S.A.
+
+### 1. Archivos Afectados
+- `frontend/src/components/AppShell/AppShell.jsx` (Modificado)
+- `frontend/src/pages/LoginPage/LoginPage.jsx` (Modificado)
+- `frontend/src/pages/RegisterPage/RegisterPage.jsx` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se actualizÃ³ la marca visible de la barra lateral a `TicoSoft S.A.`.
+- Se actualizÃ³ el acceso pÃºblico y sus correos demo a `ticosoft.cr`.
+- Se actualizÃ³ el tÃ­tulo del registro y el texto legal de tÃ©rminos y condiciones.
+- El payload de registro ahora incluye `company: 'TicoSoft S.A.'`.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se reemplazÃ³ el nombre de empresa visible y legal de Kendall por TicoSoft S.A. en el inicio de sesiÃ³n, registro y barra lateral.
+
+---
+
 ## [Entrada #20]
 **IndicaciÃ³n / Tarea:**
 > Integrar datos reales, registro de trabajadores, cÃ©dula, ubicaciÃ³n, calendario y derechos laborales de Costa Rica.

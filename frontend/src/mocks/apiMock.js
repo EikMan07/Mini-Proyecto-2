@@ -23,6 +23,11 @@ const employeeSummary = {
     { id: 'REQ-271', type: 'Permiso personal', dates: '04 jun 2025', status: 'Aprobada', createdAt: 'Hace 8 días' },
   ],
 };
+const ATTENDANCE_KEY = 'ticosoft-demo-attendance';
+
+function getAttendanceRecord() {
+  try { return JSON.parse(localStorage.getItem(ATTENDANCE_KEY)) || employeeSummary.attendanceToday; } catch { return employeeSummary.attendanceToday; }
+}
 
 const baseTrend = [
   { day: '19 may', absences: 3, queries: 18, turnover: 1 }, { day: '21 may', absences: 5, queries: 24, turnover: 0 },
@@ -37,7 +42,7 @@ export const getMockUser = (role) => users[role === 'rrhh' ? 'hr' : 'employee'];
 
 export const apiMock = {
   async login({ role }) { await wait(); return { token: `demo-token-${role}`, user: getMockUser(role) }; },
-  async getEmployeeSummary() { await wait(180); return structuredClone(employeeSummary); },
+  async getEmployeeSummary() { await wait(180); const summary = structuredClone(employeeSummary); summary.attendanceToday = getAttendanceRecord(); return summary; },
   async askChat(question) {
     await wait(900);
     const normalized = question.toLowerCase();
@@ -63,10 +68,20 @@ export const apiMock = {
   },
   async checkIn() {
     await wait(420);
-    return {
+    const result = {
       status: 'registrada',
+      checkedOutAt: null,
       checkedAt: new Intl.DateTimeFormat('es-CR', { hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date()),
     };
+    localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(result));
+    return result;
+  },
+  async checkOut() {
+    await wait(420);
+    const current = getAttendanceRecord();
+    const result = { ...current, status: 'cerrada', checkedOutAt: new Intl.DateTimeFormat('es-CR', { hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date()) };
+    localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(result));
+    return result;
   },
   async submitRequest(payload) { await wait(500); return { id: `REQ-${Math.floor(Math.random() * 100) + 300}`, ...payload, status: 'Pendiente', createdAt: 'Ahora' }; },
   async getDailyReport(date) {
@@ -87,6 +102,7 @@ export const apiMock = {
         { id: 'REQ-276', person: 'Sofía Castro', type: 'Permiso personal', department: 'Producto', age: '2 días', overdue: false },
       ], unresolved: ['¿Existe un bono por mascotas?', '¿Puedo conocer el salario de otra persona?', '¿Cómo se solicita una excepción de horario?'],
       history: ['2025-06-13', '2025-06-12', '2025-06-11', '2025-06-10'],
+      attendance: [{ person: 'Kendall Vargas', department: 'Producto', checkedAt: getAttendanceRecord().checkedAt, checkedOutAt: getAttendanceRecord().checkedOutAt, status: getAttendanceRecord().status }],
       details: {
         absences: { total: 7, detail: '3.1% de la plantilla', breakdown: { Vacaciones: 3, Permisos: 2, Incapacidades: 2 } },
         medical: { total: 4, detail: '12 días acumulados durante el mes', status: '2 requieren seguimiento', tone: 'warning' },

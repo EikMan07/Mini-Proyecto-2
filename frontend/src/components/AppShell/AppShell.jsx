@@ -7,31 +7,15 @@ import { useTheme } from '../../context/ThemeContext';
 import { dashboardItemVariants, dashboardVariants, spring } from '../../lib/motion';
 
 export default function AppShell({ children, eyebrow, title, subtitle, actions }) {
-  const { user, signOut } = useAuth();
-  const { isDark, toggleTheme, accent, setAccent, accentOptions } = useTheme();
-  const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('kendall-sidebar') === 'collapsed');
-  const navigate = useNavigate();
-  const isHr = user?.role === 'rrhh';
-  const handleSignOut = () => {
-    signOut();
-    navigate('/login', { replace: true });
-  };
+  const { user, signOut } = useAuth(); const { isDark, toggleTheme, accent, setAccent, accentOptions } = useTheme();
+  const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('kendall-sidebar') === 'collapsed'); const navigate = useNavigate(); const isHr = user?.role === 'rrhh';
+  const handleSignOut = () => { signOut(); navigate('/login', { replace: true }); };
   const toggleSidebar = () => setIsCollapsed((current) => { const next = !current; localStorage.setItem('kendall-sidebar', next ? 'collapsed' : 'open'); return next; });
-
   return <div className={`app-shell ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
     <motion.aside layout className="side-rail" initial={{ x: -24, opacity: 0 }} animate={{ x: 0, opacity: 1, width: isCollapsed ? 84 : 232 }} transition={spring}>
-      <motion.div layout className="brand-lockup"><AnimatePresence mode="wait">{!isCollapsed && <motion.span layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: .18 }}><strong>Kendall</strong><small>People operations</small></motion.span>}</AnimatePresence><motion.button className="rail-toggle" onClick={toggleSidebar} aria-label={isCollapsed ? 'Expandir navegación' : 'Colapsar navegación'} whileTap={{ scale: .88 }} whileHover={{ rotate: isCollapsed ? 0 : -8 }}>{isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}</motion.button></motion.div>
-      <motion.nav className="main-nav" aria-label="Navegación principal" variants={dashboardVariants} initial="initial" animate="animate">
-        <motion.div variants={dashboardItemVariants}><NavLink title={isCollapsed ? (isHr ? 'Resumen diario' : 'Mi espacio') : undefined} to={isHr ? '/rrhh/dashboard' : '/portal'} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><LayoutDashboard size={17} />{!isCollapsed && (isHr ? 'Resumen diario' : 'Mi espacio')}</NavLink></motion.div>
-        {!isCollapsed && <motion.span className="nav-label" variants={dashboardItemVariants}>Atajos</motion.span>}
-        {!isHr && <motion.div variants={dashboardItemVariants}><a title={isCollapsed ? 'Asistente de políticas' : undefined} className="nav-link muted" href="#chat"><MessageCircle size={17} />{!isCollapsed && 'Asistente de políticas'}</a></motion.div>}
-        <motion.div variants={dashboardItemVariants}><a title={isCollapsed ? 'Solicitudes' : undefined} className="nav-link muted" href="#requests"><ClipboardList size={17} />{!isCollapsed && (isHr ? 'Solicitudes pendientes' : 'Solicitudes')}</a></motion.div>
-      </motion.nav>
+      <motion.div layout className="brand-lockup"><AnimatePresence mode="wait">{!isCollapsed && <motion.span layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: .18 }}><strong>TicoSoft S.A.</strong><small>People operations</small></motion.span>}</AnimatePresence><motion.button className="rail-toggle" onClick={toggleSidebar} aria-label={isCollapsed ? 'Expandir navegación' : 'Colapsar navegación'} whileTap={{ scale: .88 }} whileHover={{ rotate: isCollapsed ? 0 : -8 }}>{isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}</motion.button></motion.div>
+      <motion.nav className="main-nav" aria-label="Navegación principal" variants={dashboardVariants} initial="initial" animate="animate"><motion.div variants={dashboardItemVariants}><NavLink title={isCollapsed ? (isHr ? 'Resumen diario' : 'Mi espacio') : undefined} to={isHr ? '/rrhh/dashboard' : '/portal'} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><LayoutDashboard size={17} />{!isCollapsed && (isHr ? 'Resumen diario' : 'Mi espacio')}</NavLink></motion.div>{!isCollapsed && <motion.span className="nav-label" variants={dashboardItemVariants}>Atajos</motion.span>}{!isHr && <motion.div variants={dashboardItemVariants}><a title={isCollapsed ? 'Asistente de políticas' : undefined} className="nav-link muted" href="#chat"><MessageCircle size={17} />{!isCollapsed && 'Asistente de políticas'}</a></motion.div>}<motion.div variants={dashboardItemVariants}><a title={isCollapsed ? 'Solicitudes' : undefined} className="nav-link muted" href="#requests"><ClipboardList size={17} />{!isCollapsed && (isHr ? 'Solicitudes pendientes' : 'Solicitudes')}</a></motion.div></motion.nav>
       <div className="rail-footer"><div className="status-line"><span className="status-dot" />{!isCollapsed && 'Sistemas operativos'}</div><div className={`accent-picker ${isCollapsed ? 'compact' : ''}`}><span className="accent-label"><Palette size={14} />{!isCollapsed && 'Color de acento'}</span><div className="accent-options">{Object.entries(accentOptions).map(([key, option]) => <button key={key} type="button" className={`accent-swatch ${accent === key ? 'selected' : ''}`} style={{ '--swatch': option.light }} onClick={() => setAccent(key)} aria-label={`Elegir color ${option.label}`} aria-pressed={accent === key} title={option.label} />)}</div></div><motion.button className="theme-toggle" onClick={toggleTheme} aria-label="Cambiar tema" whileTap={{ scale: .9 }}>{isDark ? <Sun size={16} /> : <Moon size={16} />}{!isCollapsed && (isDark ? 'Modo claro' : 'Modo oscuro')}</motion.button><motion.button className="text-button" onClick={handleSignOut} whileTap={{ x: 2 }}><LogOut size={15} />{!isCollapsed && 'Cerrar sesión'}</motion.button></div>
-    </motion.aside>
-    <motion.main className="main-content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .3, delay: .08 }}>
-      <header className="page-header"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1>{subtitle && <p className="page-subtitle">{subtitle}</p>}</div><div className="header-actions">{actions}<div className="user-chip"><span className="avatar">{user?.name?.split(' ').map((word) => word[0]).join('').slice(0, 2)}</span><span><strong>{user?.name}</strong><small>{isHr ? 'RRHH · Administradora' : user?.department}</small></span></div></div></header>
-      {children}
-    </motion.main>
+    </motion.aside><motion.main className="main-content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .3, delay: .08 }}><header className="page-header"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1>{subtitle && <p className="page-subtitle">{subtitle}</p>}</div><div className="header-actions">{actions}<div className="user-chip"><span className="avatar">{user?.name?.split(' ').map((word) => word[0]).join('').slice(0, 2)}</span><span><strong>{user?.name}</strong><small>{isHr ? 'RRHH · Administradora' : user?.department}</small></span></div></div></header>{children}</motion.main>
   </div>;
 }

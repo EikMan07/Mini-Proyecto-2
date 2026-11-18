@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **attendance:** agrega marca de salida
+  Añade cierre de jornada, persistencia de entrada y salida para la demo y visualización administrativa.
+
 - **frontend:** integra datos laborales reales
   Añade registro de trabajadores, validación de cédula configurable, ubicación, calendario laboral y documentos oficiales del MTSS.
 

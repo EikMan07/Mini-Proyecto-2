@@ -16,6 +16,7 @@ export const api = {
   getEmployeeSummary: () => API_URL ? request('/api/employee/me/summary') : apiMock.getEmployeeSummary(),
   askChat: (question) => API_URL ? request('/api/chat', { method: 'POST', body: JSON.stringify({ question }) }) : apiMock.askChat(question),
   checkIn: () => API_URL ? request('/api/attendance/check-in', { method: 'POST' }) : apiMock.checkIn(),
+  checkOut: () => API_URL ? request('/api/attendance/check-out', { method: 'POST' }) : apiMock.checkOut(),
   submitRequest: (payload) => API_URL ? request('/api/requests', { method: 'POST', body: JSON.stringify(payload) }) : apiMock.submitRequest(payload),
   getDailyReport: (date) => API_URL ? request(`/api/reports/daily?fecha=${date}`) : apiMock.getDailyReport(date),
 };
