@@ -62,6 +62,18 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Fixed
+- **requests:** bloquea fechas pasadas
+  Impide seleccionar o enviar solicitudes de días libres para fechas anteriores al día actual.
+
+- **frontend:** suaviza cambios de sesión
+  Restaura la sesión antes del primer render y cruza las rutas con una transición breve para evitar pantallas vacías al iniciar o cerrar sesión; ajusta el layout para móvil y tablet.
+
+- **vacations:** descuenta y acumula saldo
+  Mantiene el saldo intacto mientras la solicitud está pendiente, lo descuenta al aprobarla y suma automáticamente un día por cada semana completa.
+
+- **vacations:** muestra saldo en días enteros
+  Presenta el saldo disponible como un número cerrado, sin valores decimales, en la tarjeta y en el chat.
+
 - **register:** fija botón de verificar
   Corrige la alineación del botón Verificar cédula cuando aparece el mensaje de identidad consultada.\n\nCambios principales:\n- Se fija la posición superior del contenedor inline-action dentro del campo de cédula.\n- Se mantiene el botón alineado con el input al mostrar la confirmación de identidad.\n- Se actualiza CHANGELOG.md y se registra la acción en la bitácora del agente.
 

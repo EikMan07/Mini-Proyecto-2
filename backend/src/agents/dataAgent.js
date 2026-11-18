@@ -5,6 +5,7 @@ const path = require('path');
 const { Op } = require('sequelize');
 const db = require('../models');
 const { generarConGemini } = require('../services/llmService');
+const { accrueWeeklyDays } = require('../services/vacationBalanceService');
 const { ForbiddenError, NotFoundError } = require('../utils/errors');
 
 const PROMPT_PATH = path.resolve(__dirname, '../prompts/dataAgent.md');
@@ -75,7 +76,9 @@ async function obtenerDatosPersonales(colaboradorId) {
   ]);
 
   const jsonColab = colaborador.toJSON();
-  const saldo2026 = saldosVacaciones[0] ? saldosVacaciones[0].toJSON() : null;
+  const saldoRegistro = saldosVacaciones[0];
+  if (saldoRegistro) await accrueWeeklyDays(saldoRegistro);
+  const saldo2026 = saldoRegistro ? saldoRegistro.toJSON() : null;
 
   return {
     colaborador: {
@@ -90,6 +93,7 @@ async function obtenerDatosPersonales(colaboradorId) {
       estado: jsonColab.estado,
       rol: jsonColab.rol,
     },
+    vacationBalance: saldo2026 ? saldo2026.dias_disponibles : 0,
     saldo_vacaciones_2026: saldo2026
       ? {
           periodo: saldo2026.periodo,

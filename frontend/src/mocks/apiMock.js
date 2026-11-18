@@ -1,4 +1,4 @@
-import { getLocalDocuments, getLocalRequests, saveLocalDocument, saveLocalRequest, updateLocalRequest } from '../services/workflowService';
+import { getLocalDocuments, getLocalRequests, getVacationBalance, saveLocalDocument, saveLocalRequest, updateLocalRequest } from '../services/workflowService';
 
 const wait = (milliseconds = 280) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -17,7 +17,7 @@ const citations = [
 ];
 
 const employeeSummary = {
-  vacationBalance: 14.5,
+  vacationBalance: 14,
   attendanceToday: { status: 'pendiente', checkedAt: null },
   medicalLeaves: [{ date: '12 jun 2025', type: 'Comprobante CCSS', status: 'en revisión' }],
   requests: [
@@ -45,12 +45,13 @@ const localPending = () => getLocalRequests().filter((request) => request.status
 
 export const apiMock = {
   async login({ role }) { await wait(); return { token: `demo-token-${role}`, user: getMockUser(role) }; },
-  async getEmployeeSummary() { await wait(180); const summary = structuredClone(employeeSummary); summary.attendanceToday = getAttendanceRecord(); const ownRequests = getLocalRequests(); summary.requests = [...ownRequests, ...summary.requests.filter((item) => !ownRequests.some((request) => request.id === item.id))]; return summary; },
+  async getEmployeeSummary() { await wait(180); const summary = structuredClone(employeeSummary); summary.vacationBalance = getVacationBalance(); summary.attendanceToday = getAttendanceRecord(); const ownRequests = getLocalRequests(); summary.requests = [...ownRequests, ...summary.requests.filter((item) => !ownRequests.some((request) => request.id === item.id))]; return summary; },
   async askChat(question) {
     await wait(900);
     const normalized = question.toLowerCase();
     if ((normalized.includes('cuántos') && normalized.includes('vacaciones')) || normalized.includes('saldo')) {
-      return { answer: 'Tienes 14.5 días disponibles para solicitar durante el periodo 2025.', personal: { label: 'Tu saldo actual', value: '14.5 días', detail: 'Periodo vigente 2025' }, policyText: 'Las solicitudes deben enviarse con al menos 3 días de anticipación.', agentUsed: 'Employee Data + HR Policy Agent', citations: [citations[0]], escalated: false, latencyMs: 382 };
+      const balance = getVacationBalance();
+      return { answer: `Tienes ${balance} días disponibles para solicitar durante el periodo 2025.`, personal: { label: 'Tu saldo actual', value: `${balance} días`, detail: 'Periodo vigente 2025' }, policyText: 'Las solicitudes deben enviarse con al menos 3 días de anticipación.', agentUsed: 'Employee Data + HR Policy Agent', citations: [citations[0]], escalated: false, latencyMs: 382 };
     }
     if (normalized.includes('pago') || normalized.includes('próximo')) {
       return { answer: 'Tu próximo pago está programado para el viernes 27 de junio de 2025.', personal: { label: 'Próximo pago', value: '27 jun 2025', detail: 'Nómina mensual' }, agentUsed: 'Employee Data Agent', citations: [], escalated: false, latencyMs: 341 };
@@ -86,7 +87,16 @@ export const apiMock = {
     localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(result));
     return result;
   },
-  async submitRequest(payload) { await wait(500); const request = { id: `REQ-${Date.now()}`, person: 'Kendall Vargas', department: 'Producto', ...payload, status: 'Pendiente', createdAt: 'Ahora', submittedAt: new Date().toISOString() }; saveLocalRequest(request); return request; },
+  async submitRequest(payload) {
+    await wait(500);
+    if (payload.type === 'Vacaciones') {
+      const balance = getVacationBalance();
+      if (payload.days > balance) throw new Error(`Saldo insuficiente. Disponibles: ${balance}, solicitados: ${payload.days}.`);
+    }
+    const request = { id: `REQ-${Date.now()}`, person: 'Kendall Vargas', department: 'Producto', ...payload, status: 'Pendiente', createdAt: 'Ahora', submittedAt: new Date().toISOString() };
+    saveLocalRequest(request);
+    return request;
+  },
   async updateRequestStatus(id, status, reviewNote = '') { await wait(300); return updateLocalRequest(id, status, reviewNote); },
   async uploadDocument(file) { await wait(500); const document = { id: `DOC-${Date.now()}`, name: file.name, size: file.size, type: file.type, person: 'Kendall Vargas', status: 'Pendiente', uploadedAt: new Date().toISOString() }; saveLocalDocument(document); return document; },
   async getDailyReport(date) {

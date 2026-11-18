@@ -3,6 +3,185 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #40]
+**Indicación / Tarea:**
+> Sube los cambios pendientes a https://github.com/EikMan07/Mini-Proyecto-2.git.
+
+### 1. Archivos Afectados
+- `CHANGELOG.md`
+- `backend/src/agents/dataAgent.js`
+- `backend/src/migrations/20261118000004-add-vacation-accrual.js`
+- `backend/src/models/saldoVacaciones.js`
+- `backend/src/schemas/portalSchemas.js`
+- `backend/src/services/requestService.js`
+- `backend/src/services/vacationBalanceService.js`
+- `frontend/src/App.jsx`
+- `frontend/src/components/AppShell/AppShell.jsx`
+- `frontend/src/components/LeaveRequestModal/LeaveRequestModal.jsx`
+- `frontend/src/components/LeaveRequestModal/LeaveRequestModal.test.jsx`
+- `frontend/src/components/PageTransition/PageTransition.jsx`
+- `frontend/src/components/RequestReviewPanel/RequestReviewPanel.jsx`
+- `frontend/src/context/AuthContext.jsx`
+- `frontend/src/context/AuthContext.test.jsx`
+- `frontend/src/index.css`
+- `frontend/src/mocks/apiMock.js`
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx`
+- `frontend/src/pages/LoginPage/LoginPage.jsx`
+- `frontend/src/routes/ProtectedRoute.jsx`
+- `frontend/src/services/api.js`
+- `frontend/src/services/workflowService.js`
+- `frontend/src/services/workflowService.test.js`
+- `bitacora_agente.md`
+- Rama `feature-kendall` y remoto `origin`
+
+### 2. Resumen de Acciones Técnicas
+- Se revisó el estado de la rama y se confirmó que apunta al repositorio GitHub indicado.
+- Se preparará un commit que consolida las modificaciones pendientes de vacaciones, calendario de fechas, sesión y responsive.
+- La documentación relacionada ya está actualizada en `CHANGELOG.md`; README y SECURITY no requieren cambios para estas funcionalidades.
+
+### 3. Respuesta Completa del Agente
+Se prepararon los cambios pendientes para commit y publicación en GitHub en la rama `feature-kendall`.
+
+---
+
+## [Entrada #39]
+**Indicación / Tarea:**
+> No permitir solicitar días libres para fechas que ya pasaron en el calendario.
+
+### 1. Archivos Afectados
+- `frontend/src/components/LeaveRequestModal/LeaveRequestModal.jsx` (Modificado)
+- `frontend/src/components/LeaveRequestModal/LeaveRequestModal.test.jsx` (Creado)
+- `backend/src/schemas/portalSchemas.js` (Modificado)
+- `CHANGELOG.md` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones Técnicas
+- Se configura `min` en los selectores de fecha para no habilitar días anteriores a hoy.
+- Se valida el rango al enviar, incluso si se introduce manualmente una fecha pasada.
+- Se agregó validación de servidor usando la fecha actual de Costa Rica para rechazar solicitudes pasadas.
+- Se añadieron pruebas del límite del calendario y de la validación del formulario.
+- No se ejecutaron pruebas/build en terminal por la denegación de permiso recibida en esta sesión.
+
+### 3. Respuesta Completa del Agente
+El calendario de solicitudes ahora solo permite elegir desde hoy en adelante. También se valida el envío y el backend rechaza fechas pasadas, incluso si alguien las escribe manualmente. Añadí pruebas para ambos casos; no pude ejecutarlas porque la terminal denegó permiso.
+
+---
+
+## [Entrada #38]
+**Indicación / Tarea:**
+> Revisar el destello al cerrar y abrir sesión y hacer la interfaz responsive en teléfonos y computadoras.
+
+### 1. Archivos Afectados
+- `frontend/src/context/AuthContext.jsx` (Modificado)
+- `frontend/src/App.jsx` (Modificado)
+- `frontend/src/routes/ProtectedRoute.jsx` (Modificado)
+- `frontend/src/components/PageTransition/PageTransition.jsx` (Modificado)
+- `frontend/src/components/AppShell/AppShell.jsx` (Modificado)
+- `frontend/src/pages/LoginPage/LoginPage.jsx` (Modificado)
+- `frontend/src/index.css` (Modificado)
+- `frontend/src/context/AuthContext.test.jsx` (Creado)
+- `CHANGELOG.md` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones Técnicas
+- Se restaura la sesión desde `localStorage` antes del primer render, evitando mostrar brevemente la página equivocada.
+- Se reemplazó la espera entre rutas por un fundido cruzado corto y compatible con `prefers-reduced-motion`.
+- Se eliminó la capa temporizada de cierre y la navegación duplicada al iniciar o cerrar sesión.
+- Se ajustó el ancho de la barra lateral en tabletas y el ajuste de acciones, usuario y chat en pantallas pequeñas.
+- Se añadió una prueba de restauración inmediata de sesión.
+- La ejecución de pruebas/build fue bloqueada por la denegación de permiso de la terminal; no se afirma validación de compilación.
+
+### 3. Respuesta Completa del Agente
+Corregí el cambio entre portal y acceso: la sesión se restaura antes del primer render y las rutas usan un fundido cruzado breve, sin dejar un hueco ni ejecutar la navegación dos veces. También ajusté la barra lateral, acciones del encabezado y chat para pantallas pequeñas.
+
+Archivos principales: [AuthContext.jsx](./frontend/src/context/AuthContext.jsx), [PageTransition.jsx](./frontend/src/components/PageTransition/PageTransition.jsx), [AppShell.jsx](./frontend/src/components/AppShell/AppShell.jsx), [index.css](./frontend/src/index.css) y [AuthContext.test.jsx](./frontend/src/context/AuthContext.test.jsx).
+
+No pude reproducir el MP4 en este entorno. Añadí una prueba de restauración de sesión, pero la terminal denegó permiso para ejecutar pruebas y build; por tanto, la validación queda pendiente. Los cambios no se han subido a GitHub.
+
+---
+
+## [Entrada #37]
+**Indicación / Tarea:**
+> Que el saldo no baje hasta que RR. HH. acepte las vacaciones; después debe mostrarse la aprobación y descontarse los días solicitados.
+
+### 1. Archivos Afectados
+- `frontend/src/services/workflowService.js` (Modificado)
+- `frontend/src/mocks/apiMock.js` (Modificado)
+- `frontend/src/services/api.js` (Modificado)
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx` (Modificado)
+- `frontend/src/components/RequestReviewPanel/RequestReviewPanel.jsx` (Modificado)
+- `frontend/src/index.css` (Modificado)
+- `frontend/src/services/workflowService.test.js` (Creado)
+- `backend/src/services/requestService.js` (Modificado)
+- `backend/src/services/vacationBalanceService.js` (Creado)
+- `backend/src/agents/dataAgent.js` (Modificado)
+- `CHANGELOG.md` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones Técnicas
+- Las solicitudes pendientes ya no descuentan días, pero se valida que el saldo actual alcance.
+- La aprobación de RR. HH. descuenta los días dentro de una transacción; si no hay saldo suficiente, la aprobación falla y la solicitud permanece pendiente.
+- El rechazo no altera el saldo. El portal refleja el estado aprobado y muestra cuántos días se descontaron.
+- Se actualiza el resumen del colaborador al volver a la pestaña y al recibir cambios de almacenamiento entre pestañas.
+- Se conserva la acumulación semanal; la lógica de acumulación ahora se comparte con el flujo de aprobación.
+- Se corrigió el mapeo de rutas y estados de la API para la aprobación backend.
+- Se añadieron pruebas para verificar saldo pendiente, aprobado y rechazado.
+- Validación: 3 suites/4 pruebas aprobadas, build de Vite exitoso y sintaxis del backend validada. El build conserva un aviso de chunk mayor a 500 kB.
+
+### 3. Respuesta Completa del Agente
+Listo: el saldo no cambia mientras la solicitud de vacaciones está pendiente. Cuando RR. HH. la aprueba, se descuentan los días solicitados y la persona ve la aprobación junto con la cantidad descontada. Si se rechaza, el saldo queda igual. Las pruebas y la compilación del frontend pasaron; la sintaxis del backend también quedó validada. Los cambios no se han enviado a GitHub.
+
+---
+
+## [Entrada #36]
+**Indicación / Tarea:**
+> Que las solicitudes de vacaciones descuenten el saldo disponible y que el saldo aumente un día cada semana.
+
+### 1. Archivos Afectados
+- `frontend/src/services/workflowService.js` (Modificado)
+- `frontend/src/mocks/apiMock.js` (Modificado)
+- `frontend/src/components/LeaveRequestModal/LeaveRequestModal.jsx` (Modificado)
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx` (Modificado)
+- `frontend/src/services/api.js` (Modificado)
+- `backend/src/services/requestService.js` (Modificado)
+- `backend/src/agents/dataAgent.js` (Modificado)
+- `backend/src/models/saldoVacaciones.js` (Modificado)
+- `backend/src/migrations/20261118000004-add-vacation-accrual.js` (Creado)
+- `CHANGELOG.md` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones Técnicas
+- Se valida que las vacaciones solicitadas no excedan el saldo disponible.
+- Se descuentan los días al enviar la solicitud, tanto en el demo como en el backend.
+- Se agrega acumulación de un día por cada periodo completo de siete días.
+- Se actualiza inmediatamente la tarjeta y el chat con el saldo vigente.
+- Se agregó la fecha de última acumulación al modelo y una migración del backend.
+
+### 3. Respuesta Completa del Agente
+Ahora solicitar vacaciones resta la cantidad exacta de días al saldo disponible. Además, el saldo suma un día automáticamente después de cada semana completa desde la última acumulación.
+
+---
+
+## [Entrada #35]
+**Indicación / Tarea:**
+> Muestra los días de vacaciones como un número cerrado exacto sin decimales.
+
+### 1. Archivos Afectados
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx` (Modificado)
+- `frontend/src/mocks/apiMock.js` (Modificado)
+- `CHANGELOG.md` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones Técnicas
+- Se convirtió el saldo mostrado en la tarjeta de vacaciones a un entero con `Math.floor`.
+- Se dejó el saldo demo del portal y del chat en 14 días completos.
+- Se registró el cambio en el changelog.
+
+### 3. Respuesta Completa del Agente
+El saldo disponible ahora se presenta como un número entero cerrado. En la vista actual mostrará 14 días y ya no mostrará 14.5.
+
+---
+
 ## [Entrada #34]
 **Indicación / Tarea:**
 > Finalizar la integración y publicar el resultado en GitHub.
