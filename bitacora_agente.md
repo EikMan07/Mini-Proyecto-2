@@ -3,6 +3,25 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #28]
+**IndicaciÃ³n / Tarea:**
+> Ampliar la tarjeta de jornada para aprovechar el espacio en blanco inferior.
+
+### 1. Archivos Afectados
+- `frontend/src/index.css` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se aumentÃ³ la altura mÃ­nima de la tarjeta de asistencia en escritorio.
+- Se distribuyÃ³ el contenido para ocupar el espacio vertical disponible.
+- Se mantuvo una altura moderada en tablet y altura natural en mÃ³vil.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+La tarjeta de jornada ahora es mÃ¡s grande en computadora y aprovecha el espacio blanco inferior sin afectar la experiencia responsive en mÃ³vil.
+
+---
+
 ## [Entrada #27]
 **IndicaciÃ³n / Tarea:**
 > Agrupar los controles de sistema, colores y modo oscuro dentro de un solo botÃ³n de accesibilidad.

@@ -72,6 +72,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 ### Security
 
 ### Maintenance
+- **frontend:** amplía tarjeta de jornada
+  Aumenta la tarjeta de asistencia en escritorio para aprovechar el espacio vertical sin afectar móvil.
+
 - **frontend:** elimina tarjeta informativa
   Retira la tarjeta informativa del portal del colaborador y conserva los módulos funcionales.
 
