@@ -3,6 +3,30 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #10]
+**IndicaciÃ³n / Tarea:**
+> Sustituir la fecha y hora demo de la tarjeta de jornada por hora real e informaciÃ³n de ubicaciÃ³n.
+
+### 1. Archivos Afectados
+- `frontend/src/services/locationService.js`
+- `frontend/src/hooks/useLocalContext.js`
+- `frontend/src/components/AttendanceCard/AttendanceCard.jsx`
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se integrÃ³ la Geolocation API del navegador con solicitud explÃ­cita de permiso.
+- Se integrÃ³ reverse geocoding de BigDataCloud sin API key para resolver ciudad, provincia y paÃ­s.
+- Se agregÃ³ reloj en vivo actualizado cada segundo y formateado en `es-CR`.
+- Se sustituyÃ³ el texto fijo `viernes 13 de junio Â· demo` por fecha, hora y ubicaciÃ³n dinÃ¡micas.
+- Se agregÃ³ fallback cuando el usuario rechaza ubicaciÃ³n o el servicio no responde.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+La tarjeta de jornada ya puede mostrar hora real y contexto de ubicaciÃ³n sin exponer coordenadas exactas en la interfaz. La ubicaciÃ³n depende del permiso del navegador y la asistencia continÃºa usando el servicio/mock existente.
+
+---
+
 ## [Entrada #9]
 **IndicaciÃ³n / Tarea:**
 > Aplicar el prompt maestro ampliado de rediseÃ±o integral y verificaciÃ³n funcional del portal Kendall.

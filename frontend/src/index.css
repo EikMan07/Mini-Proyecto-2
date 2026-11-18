@@ -117,6 +117,7 @@ html[data-theme='dark'] input, html[data-theme='dark'] select, html[data-theme='
 .selected-account { color: var(--muted); font-size: .72rem; margin: -8px 0 2px; }
 .selected-account strong { color: var(--ink); }
 .role-switch button { min-height: 62px; }
+.live-location { color: var(--muted); font-size: .68rem; margin: -4px 0 12px; max-width: 360px; }
 .report-status.updating { background: var(--yellow); }
 html[data-theme='dark'] .feedback-error { color: #ffd6cf; }
 @media (max-width: 760px) { .feedback-error { align-items: flex-start; flex-direction: column; } .jump-button { font-size: .68rem; } }

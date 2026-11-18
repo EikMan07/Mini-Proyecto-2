@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **frontend:** usa hora y ubicación reales
+  Integra Geolocation API, reverse geocoding y reloj vivo en la tarjeta de jornada con fallback de privacidad.
+
 - **frontend:** completa flujos del portal
   Corrige acceso por roles, estados de error, reintentos, accesibilidad de modal, chat consciente del scroll, asistencia y tablero RRHH.
 
