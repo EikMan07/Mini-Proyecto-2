@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **frontend:** renueva sistema de animaciones
+  Añade transiciones de rutas, entradas escalonadas, springs de navegación, microinteracciones y motion coordinado para dashboards.
+
 - **frontend:** usa hora y ubicación reales
   Integra Geolocation API, reverse geocoding y reloj vivo en la tarjeta de jornada con fallback de privacidad.
 

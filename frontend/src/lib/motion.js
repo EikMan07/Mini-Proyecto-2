@@ -3,9 +3,19 @@ export const springSoft = { type: 'spring', stiffness: 260, damping: 24 };
 export const springBouncy = { type: 'spring', stiffness: 420, damping: 18 };
 
 export const pageVariants = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0, transition: { ...springSoft, staggerChildren: 0.06 } },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.2 } },
+  initial: { opacity: 0, y: 18, filter: 'blur(6px)' },
+  animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: .34, ease: [0.22, 1, .36, 1], staggerChildren: .07 } },
+  exit: { opacity: 0, y: -14, filter: 'blur(4px)', transition: { duration: .18, ease: 'easeIn' } },
+};
+
+export const dashboardVariants = {
+  initial: {},
+  animate: { transition: { staggerChildren: .09, delayChildren: .08 } },
+};
+
+export const dashboardItemVariants = {
+  initial: { opacity: 0, y: 22, scale: .985 },
+  animate: { opacity: 1, y: 0, scale: 1, transition: { ...springSoft, duration: .38 } },
 };
 
 export const cardVariants = {

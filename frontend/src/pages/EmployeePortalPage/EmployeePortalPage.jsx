@@ -6,7 +6,7 @@ import ChatBox from '../../components/ChatBox/ChatBox';
 import LeaveRequestModal from '../../components/LeaveRequestModal/LeaveRequestModal';
 import StatusBadge from '../../components/StatusBadge/StatusBadge';
 import { api } from '../../services/api';
-import { cardVariants, springSoft } from '../../lib/motion';
+import { dashboardItemVariants, dashboardVariants, springSoft } from '../../lib/motion';
 
 export default function EmployeePortalPage() {
   const [summary, setSummary] = useState(null);
@@ -37,16 +37,16 @@ export default function EmployeePortalPage() {
       actions={<button className="button secondary" onClick={() => setIsModalOpen(true)}>Nueva solicitud <span>↗</span></button>}
     >
       <LayoutGroup id="employee-dashboard">
-        <motion.div className="portal-grid" layout initial="initial" animate="animate" variants={cardVariants}>
-          <div className="portal-main">
+        <motion.div className="portal-grid" layout initial="initial" animate="animate" variants={dashboardVariants}>
+          <motion.div className="portal-main" variants={dashboardItemVariants}>
             <ChatBox />
             <AttendanceCard
               attendance={summary.attendanceToday}
               onCheckedIn={(result) => setSummary((current) => ({ ...current, attendanceToday: result }))}
             />
-          </div>
+          </motion.div>
 
-          <aside className="portal-aside">
+          <motion.aside className="portal-aside" variants={dashboardVariants}>
             <motion.section className="balance-card" layout transition={springSoft} whileHover={{ y: -3 }}>
               <p className="eyebrow">Saldo disponible</p>
               <strong>{summary.vacationBalance}<small> días</small></strong>
@@ -79,7 +79,7 @@ export default function EmployeePortalPage() {
               <span>✦</span>
               <div><strong>Una buena pregunta abre una puerta</strong><p>El asistente responde con políticas vigentes y te muestra la fuente para que puedas leer más.</p></div>
             </motion.section>
-          </aside>
+          </motion.aside>
         </motion.div>
       </LayoutGroup>
 

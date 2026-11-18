@@ -3,6 +3,36 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #13]
+**IndicaciÃ³n / Tarea:**
+> Cambiar completamente la animaciÃ³n y elevar el sistema de movimiento de toda la interfaz.
+
+### 1. Archivos Afectados
+- `frontend/src/lib/motion.js`
+- `frontend/src/components/PageTransition/PageTransition.jsx`
+- `frontend/src/routes/AppRouter.jsx`
+- `frontend/src/components/AppShell/AppShell.jsx`
+- `frontend/src/components/KpiCard/KpiCard.jsx`
+- `frontend/src/components/KpiGrid/KpiGrid.jsx`
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx`
+- `frontend/src/pages/HrDashboardPage/HrDashboardPage.jsx`
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se agregÃ³ transiciÃ³n real entre rutas con `AnimatePresence`.
+- Se reemplazaron entradas simples por secuencias escalonadas con `dashboardVariants` y `dashboardItemVariants`.
+- Se animaron sidebar, marca, navegaciÃ³n, botÃ³n de colapso, KPI y tarjetas con springs.
+- Se agregaron hover/press states funcionales para los elementos interactivos.
+- Se corrigiÃ³ el grid responsive para que la sidebar colapsada ocupe realmente menos espacio.
+- Se mantuvo soporte para `prefers-reduced-motion`.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+La interfaz ahora tiene un sistema de animaciÃ³n distinto y perceptible, orientado a comunicar navegaciÃ³n, jerarquÃ­a, carga, selecciÃ³n y respuesta del sistema sin depender de una sola animaciÃ³n global.
+
+---
+
 ## [Entrada #12]
 **IndicaciÃ³n / Tarea:**
 > Cambiar todo el diseÃ±o visual de la pÃ¡gina porque la iteraciÃ³n anterior no era suficientemente visible.
