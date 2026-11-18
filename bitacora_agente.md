@@ -3,6 +3,26 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #24]
+**IndicaciÃ³n / Tarea:**
+> Subir el apartado de feriados de Costa Rica al espacio superior disponible.
+
+### 1. Archivos Afectados
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se moviÃ³ `WorkCalendar` al inicio de la columna derecha del portal.
+- El calendario ahora aparece antes del saldo y solicitudes personales.
+- El centro de derechos permanece debajo del contenido principal.
+- Se conservaron los estilos responsive para apilar los mÃ³dulos en mÃ³vil.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+El calendario de feriados de Costa Rica ahora ocupa el espacio superior de la columna derecha, evitando que quede al final de la pÃ¡gina.
+
+---
+
 ## [Entrada #23]
 **IndicaciÃ³n / Tarea:**
 > Hacer reales las vacaciones, solicitudes y comprobantes, con revisiÃ³n administrativa y diseÃ±o responsive.

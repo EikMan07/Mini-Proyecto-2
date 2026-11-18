@@ -69,6 +69,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 ### Security
 
 ### Maintenance
+- **frontend:** eleva calendario laboral
+  Mueve el calendario de feriados al inicio de la columna derecha y conserva el layout responsive.
+
 - **frontend:** limpia encabezado del portal
   Retira el subtítulo del portal del colaborador y evita reservar espacio cuando no existe.
 

@@ -48,6 +48,7 @@ export default function EmployeePortalPage() {
           </motion.div>
 
           <motion.aside className="portal-aside" variants={dashboardVariants}>
+            <WorkCalendar />
             <motion.section className="balance-card" layout transition={springSoft} whileHover={{ y: -3 }}>
               <p className="eyebrow">Saldo disponible</p>
               <strong>{summary.vacationBalance}<small> días</small></strong>
@@ -83,7 +84,7 @@ export default function EmployeePortalPage() {
           </motion.aside>
         </motion.div>
       </LayoutGroup>
-      <div className="employee-resource-grid"><RightsCenter /><WorkCalendar /></div>
+      <div className="employee-resource-grid"><RightsCenter /></div>
 
       {isModalOpen && <LeaveRequestModal onClose={() => setIsModalOpen(false)} onCreated={addRequest} />}
     </AppShell>
