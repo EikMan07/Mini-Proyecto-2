@@ -3,6 +3,27 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #27]
+**IndicaciÃ³n / Tarea:**
+> Agrupar los controles de sistema, colores y modo oscuro dentro de un solo botÃ³n de accesibilidad.
+
+### 1. Archivos Afectados
+- `frontend/src/components/AppShell/AppShell.jsx` (Modificado)
+- `frontend/src/index.css` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se agregÃ³ el botÃ³n Accesibilidad en la barra lateral.
+- Se ocultaron por defecto estado, colores y modo oscuro.
+- Al abrir el panel se muestran los controles agrupados con animaciÃ³n.
+- El panel funciona tambiÃ©n con la barra lateral colapsada y en mÃ³vil.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Los controles mostrados en la captura ahora estÃ¡n dentro de un Ãºnico botÃ³n de Accesibilidad; al tocarlo se despliega el apartado completo.
+
+---
+
 ## [Entrada #26]
 **IndicaciÃ³n / Tarea:**
 > Quitar la tarjeta informativa “Una buena pregunta abre una puerta”.

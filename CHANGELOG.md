@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **frontend:** agrupa controles accesibles
+  Agrupa estado, colores de acento y modo oscuro dentro de un panel desplegable de accesibilidad.
+
 - **workflow:** conecta solicitudes con rrhh
   Agrega fechas reales, aprobación y rechazo de solicitudes, bandeja de comprobantes y persistencia local preparada para base de datos.
 
