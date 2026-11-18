@@ -33,7 +33,7 @@ const baseTrend = [
   { day: '11 jun', absences: 2, queries: 45, turnover: 0 }, { day: '13 jun', absences: 3, queries: 48, turnover: 1 },
 ];
 
-export const getMockUser = (role) => users[role] ?? users.employee;
+export const getMockUser = (role) => users[role === 'rrhh' ? 'hr' : 'employee'];
 
 export const apiMock = {
   async login({ role }) { await wait(); return { token: `demo-token-${role}`, user: getMockUser(role) }; },

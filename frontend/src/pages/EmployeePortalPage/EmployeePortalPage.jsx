@@ -12,12 +12,17 @@ export default function EmployeePortalPage() {
   const [summary, setSummary] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    api.getEmployeeSummary().then(setSummary).finally(() => setIsLoading(false));
-  }, []);
+  const loadSummary = () => {
+    setIsLoading(true);
+    setError('');
+    api.getEmployeeSummary().then(setSummary).catch(() => setError('No pudimos cargar tu resumen. Intenta nuevamente.')).finally(() => setIsLoading(false));
+  };
 
-  if (isLoading || !summary) return <div className="route-loader">Cargando tu espacio…</div>;
+  useEffect(() => { loadSummary(); }, []);
+
+  if (!summary && (isLoading || error)) return <div className="route-loader"><p>{isLoading ? 'Cargando tu espacio…' : error}</p>{error && <button className="button secondary" onClick={loadSummary}>Reintentar</button>}</div>;
 
   const addRequest = (request) => {
     setSummary((current) => ({ ...current, requests: [request, ...current.requests] }));

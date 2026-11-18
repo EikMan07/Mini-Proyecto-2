@@ -3,6 +3,40 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #9]
+**IndicaciÃ³n / Tarea:**
+> Aplicar el prompt maestro ampliado de rediseÃ±o integral y verificaciÃ³n funcional del portal Kendall.
+
+### 1. Archivos Afectados
+- `frontend/src/mocks/apiMock.js`
+- `frontend/src/context/AuthContext.jsx`
+- `frontend/src/pages/LoginPage/LoginPage.jsx`
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx`
+- `frontend/src/pages/HrDashboardPage/HrDashboardPage.jsx`
+- `frontend/src/components/ChatBox/ChatBox.jsx`
+- `frontend/src/components/AttendanceCard/AttendanceCard.jsx`
+- `frontend/src/components/LeaveRequestModal/LeaveRequestModal.jsx`
+- `frontend/src/components/PendingTable/PendingTable.jsx`
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se corrigiÃ³ la correspondencia de roles del mock para que Colaborador y RRHH lleguen a sus rutas correctas.
+- Se agregÃ³ recuperaciÃ³n segura de sesiones corruptas en localStorage.
+- Se rediseÃ±Ã³ el login con selector accesible, estados de carga/error y navegaciÃ³n basada en la sesiÃ³n recibida.
+- Se incorporaron errores recuperables y reintento para el resumen del colaborador y reportes de RRHH.
+- Se protegieron los reportes contra respuestas obsoletas cuando se cambia rÃ¡pidamente de fecha.
+- Se mejorÃ³ el chat con scroll consciente, botÃ³n para volver al Ãºltimo mensaje, reintento y envÃ­o bloqueado en vacÃ­o.
+- Se diferenciaron los estados reales de asistencia y archivo seleccionado, con acciÃ³n para quitar comprobantes.
+- Se agregÃ³ gestiÃ³n de foco, Escape y errores recuperables al diÃ¡logo de solicitudes.
+- Se mejorÃ³ la tabla de pendientes con semÃ¡ntica, estados Vencida/En revisiÃ³n y estado vacÃ­o.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se completÃ³ una iteraciÃ³n integral del frontend sobre Vite + React, manteniendo las rutas y servicios existentes, con mejoras de producto, accesibilidad, estados y motion en las tres experiencias principales.
+
+---
+
 ## [Entrada #8]
 **IndicaciÃ³n / Tarea:**
 > Profundizar el rediseÃ±o de Kendall con layout animations de Framer Motion y mejoras de alto impacto.

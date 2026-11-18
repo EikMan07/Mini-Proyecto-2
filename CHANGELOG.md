@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **frontend:** completa flujos del portal
+  Corrige acceso por roles, estados de error, reintentos, accesibilidad de modal, chat consciente del scroll, asistencia y tablero RRHH.
+
 - **frontend:** mejora layout animations
   Añade LayoutGroup, layoutId y springs coordinados al dashboard Kendall, junto con mejoras visuales premium, dark mode y microinteracciones.
 

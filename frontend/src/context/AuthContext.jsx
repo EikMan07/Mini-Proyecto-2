@@ -10,7 +10,10 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) setSession(JSON.parse(stored));
+    if (stored) {
+      try { setSession(JSON.parse(stored)); }
+      catch { localStorage.removeItem(STORAGE_KEY); }
+    }
     setIsLoading(false);
   }, []);
 
