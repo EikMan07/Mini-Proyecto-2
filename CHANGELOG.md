@@ -33,6 +33,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Fixed
+- **frontend:** corrige responsive móvil
+  Ajusta sidebar móvil, navegación compacta y composición de la tarjeta de jornada a partir de la grabación.
+
 - **frontend:** elimina flash al cerrar sesión
   Añade una transición opaca de salida y navegación replace para evitar mostrar brevemente la pantalla protegida.
 

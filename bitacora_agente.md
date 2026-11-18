@@ -3,6 +3,27 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #14]
+**IndicaciÃ³n / Tarea:**
+> Revisar la grabaciÃ³n y corregir la vista responsive de la interfaz.
+
+### 1. Archivos Afectados
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se corrigiÃ³ la sidebar mÃ³vil para ocupar el ancho completo.
+- Se mostrÃ³ navegaciÃ³n, atajos, tema y cierre de sesiÃ³n en la vista compacta.
+- Se ajustaron los grids de tablet y mÃ³vil.
+- Se evitÃ³ el corte de la hora de asistencia y se estabilizÃ³ el botÃ³n.
+- La vista se verificÃ³ en Chrome a un ancho compacto.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se corrigiÃ³ el problema observado en la grabaciÃ³n: la vista compacta ya no deja la sidebar como un bloque fijo y mantiene el contenido navegable y legible.
+
+---
+
 ## [Entrada #15]
 **IndicaciÃ³n / Tarea:**
 > Eliminar el flash visual que aparece al cerrar sesiÃ³n.

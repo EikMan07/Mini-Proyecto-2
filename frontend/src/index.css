@@ -227,6 +227,16 @@ html[data-theme='dark'] .tip-card { background: #2c3b3a; }
 }
 @media (max-width: 760px) {
   .app-shell, .app-shell.sidebar-collapsed { grid-template-columns: 1fr; }
+  .side-rail, .app-shell.sidebar-collapsed .side-rail { width: 100% !important; min-height: auto; height: auto; padding: 14px 16px 16px; display: flex; flex-direction: column; align-items: stretch; position: relative; }
+  .brand-lockup { min-height: 44px; padding-inline: 4px; }
+  .brand-lockup .rail-toggle { display: grid; }
+  .main-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 16px; }
+  .main-nav .nav-label { grid-column: 1 / -1; margin: 8px 8px 0; }
+  .main-nav > div, .main-nav > a { min-width: 0; }
+  .nav-link { min-height: 44px; justify-content: flex-start; padding: 10px; }
+  .rail-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; padding: 14px 4px 0; }
+  .rail-footer .status-line { grid-column: 1 / -1; }
+  .rail-footer .text-button, .rail-footer .theme-toggle { min-height: 44px; }
   .main-content { padding: 28px 16px 48px; }
   .page-header h1 { font-size: 2.8rem; }
   .panel-heading { padding: 24px 20px 18px; }
