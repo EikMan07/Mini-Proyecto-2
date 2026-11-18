@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **frontend:** integra datos laborales reales
+  Añade registro de trabajadores, validación de cédula configurable, ubicación, calendario laboral y documentos oficiales del MTSS.
+
 - **frontend:** agrega colores de acento
   Añade un selector persistente de colores para personalizar el acento visual en modo claro y oscuro.
 

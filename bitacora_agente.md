@@ -3,6 +3,36 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #20]
+**IndicaciÃ³n / Tarea:**
+> Integrar datos reales, registro de trabajadores, cÃ©dula, ubicaciÃ³n, calendario y derechos laborales de Costa Rica.
+
+### 1. Archivos Afectados
+- `frontend/src/services/realDataService.js` (Creado)
+- `frontend/src/pages/RegisterPage/RegisterPage.jsx` (Creado)
+- `frontend/src/components/RightsCenter/RightsCenter.jsx` (Creado)
+- `frontend/src/components/WorkCalendar/WorkCalendar.jsx` (Creado)
+- `frontend/src/routes/AppRouter.jsx` (Modificado)
+- `frontend/src/pages/LoginPage/LoginPage.jsx` (Modificado)
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx` (Modificado)
+- `frontend/src/index.css` (Modificado)
+- `frontend/.env.example` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se agregÃ³ `/register` con formulario de datos personales, contacto, residencia, relaciÃ³n laboral, contraseÃ±a y aceptaciÃ³n de tÃ©rminos.
+- Se agregÃ³ verificaciÃ³n de cÃ©dula configurable mediante `VITE_IDENTITY_API_URL`, con proveedor pÃºblico de referencia Gometa.
+- Se agregÃ³ bÃºsqueda de lugares mediante Open-Meteo Geocoding.
+- Se agregÃ³ calendario real de feriados de Costa Rica mediante Nager.Date y enlace al calendario oficial del MTSS.
+- Se agregÃ³ el Centro laboral con documentos oficiales del MTSS: CÃ³digo de Trabajo, temas laborales, perfil de trabajador y catÃ¡logo de trÃ¡mites.
+- El registro real requiere `VITE_API_URL` y `POST /api/auth/register`; si no existe backend, se muestra la configuraciÃ³n pendiente en lugar de crear una cuenta falsa.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se ampliÃ³ el frontend para consumir datos reales y preparar el portal para producciÃ³n: registro de trabajadores, verificaciÃ³n de identidad, ubicaciÃ³n, calendario laboral y acceso a derechos oficiales de Costa Rica. Las integraciones sensibles quedan configurables por backend y variables de entorno para no exponer secretos ni inventar una validaciÃ³n legal.
+
+---
+
 ## [Entrada #19]
 **IndicaciÃ³n / Tarea:**
 > Quitar el texto descriptivo visible debajo del encabezado del portal.

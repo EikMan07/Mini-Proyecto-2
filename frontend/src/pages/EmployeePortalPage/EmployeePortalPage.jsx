@@ -7,6 +7,8 @@ import LeaveRequestModal from '../../components/LeaveRequestModal/LeaveRequestMo
 import StatusBadge from '../../components/StatusBadge/StatusBadge';
 import { api } from '../../services/api';
 import { dashboardItemVariants, dashboardVariants, springSoft } from '../../lib/motion';
+import RightsCenter from '../../components/RightsCenter/RightsCenter';
+import WorkCalendar from '../../components/WorkCalendar/WorkCalendar';
 
 export default function EmployeePortalPage() {
   const [summary, setSummary] = useState(null);
@@ -78,6 +80,8 @@ export default function EmployeePortalPage() {
               <span>✦</span>
               <div><strong>Una buena pregunta abre una puerta</strong><p>El asistente responde con políticas vigentes y te muestra la fuente para que puedas leer más.</p></div>
             </motion.section>
+            <RightsCenter />
+            <WorkCalendar />
           </motion.aside>
         </motion.div>
       </LayoutGroup>
