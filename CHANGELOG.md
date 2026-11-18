@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **frontend:** agrega colores de acento
+  Añade un selector persistente de colores para personalizar el acento visual en modo claro y oscuro.
+
 - **frontend:** completa reportes y chat
   Amplía el chat con respuestas personales y mixtas, y agrega el detalle operativo completo del reporte diario de RRHH.
 

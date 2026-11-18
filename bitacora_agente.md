@@ -3,6 +3,29 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #18]
+**IndicaciÃ³n / Tarea:**
+> Permitir escoger diferentes colores en la pÃ¡gina.
+
+### 1. Archivos Afectados
+- `frontend/src/context/ThemeContext.jsx` (Modificado)
+- `frontend/src/components/AppShell/AppShell.jsx` (Modificado)
+- `frontend/src/index.css` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se agregÃ³ un selector de color de acento en la barra lateral.
+- Se incluyeron las opciones Coral, OcÃ©ano, Violeta, Esmeralda y Ãmbar.
+- La preferencia se persiste en `localStorage` con la clave `kendall-accent`.
+- El color elegido se adapta a los valores de modo claro y oscuro.
+- Se agregaron estados visuales, foco y etiquetas accesibles a los swatches.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se agregÃ³ un selector de colores en la barra lateral para personalizar el acento visual de toda la pÃ¡gina sin perder la preferencia al recargar.
+
+---
+
 ## [Entrada #17]
 **IndicaciÃ³n / Tarea:**
 > Quitar el Ã­cono coral visible en la barra lateral.

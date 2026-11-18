@@ -271,3 +271,10 @@ html[data-theme='dark'] .tip-card { background: #2c3b3a; }
 .scope-alert { margin-top: 8px; padding: 10px 12px; border-radius: 10px; background: var(--yellow); color: #73591b; font-size: .75rem; }
 @media (max-width: 1100px) { .report-details { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .report-details { grid-template-columns: 1fr; } .report-detail-card { min-height: auto; } }
+.accent-picker { display: grid; gap: 8px; color: #a3b5c4; font-size: .72rem; }
+.accent-label { display: flex; align-items: center; gap: 7px; }
+.accent-options { display: flex; gap: 7px; flex-wrap: wrap; }
+.accent-swatch { width: 19px; height: 19px; padding: 0; border: 2px solid transparent; border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px rgba(255,255,255,.22); cursor: pointer; transition: transform .16s, box-shadow .16s; }
+.accent-swatch:hover { transform: scale(1.16); }.accent-swatch.selected { box-shadow: 0 0 0 2px #0b1b2b, 0 0 0 4px var(--swatch); }
+.accent-picker.compact { justify-items: center; }.accent-picker.compact .accent-label { font-size: 0; }.accent-picker.compact .accent-options { justify-content: center; max-width: 42px; }
+@media (max-width: 760px) { .accent-picker { grid-column: 1 / -1; }.accent-options { justify-content: flex-start; } }

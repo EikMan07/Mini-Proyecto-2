@@ -1,14 +1,14 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Moon, Sun, LogOut, MessageCircle, LayoutDashboard, ClipboardList } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Moon, Sun, LogOut, MessageCircle, LayoutDashboard, ClipboardList, Palette } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { dashboardItemVariants, dashboardVariants, spring } from '../../lib/motion';
 
 export default function AppShell({ children, eyebrow, title, subtitle, actions }) {
   const { user, signOut } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, accent, setAccent, accentOptions } = useTheme();
   const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('kendall-sidebar') === 'collapsed');
   const navigate = useNavigate();
   const isHr = user?.role === 'rrhh';
@@ -27,7 +27,7 @@ export default function AppShell({ children, eyebrow, title, subtitle, actions }
         {!isHr && <motion.div variants={dashboardItemVariants}><a title={isCollapsed ? 'Asistente de políticas' : undefined} className="nav-link muted" href="#chat"><MessageCircle size={17} />{!isCollapsed && 'Asistente de políticas'}</a></motion.div>}
         <motion.div variants={dashboardItemVariants}><a title={isCollapsed ? 'Solicitudes' : undefined} className="nav-link muted" href="#requests"><ClipboardList size={17} />{!isCollapsed && (isHr ? 'Solicitudes pendientes' : 'Solicitudes')}</a></motion.div>
       </motion.nav>
-      <div className="rail-footer"><div className="status-line"><span className="status-dot" />{!isCollapsed && 'Sistemas operativos'}</div><motion.button className="theme-toggle" onClick={toggleTheme} aria-label="Cambiar tema" whileTap={{ scale: .9 }}>{isDark ? <Sun size={16} /> : <Moon size={16} />}{!isCollapsed && (isDark ? 'Modo claro' : 'Modo oscuro')}</motion.button><motion.button className="text-button" onClick={handleSignOut} whileTap={{ x: 2 }}><LogOut size={15} />{!isCollapsed && 'Cerrar sesión'}</motion.button></div>
+      <div className="rail-footer"><div className="status-line"><span className="status-dot" />{!isCollapsed && 'Sistemas operativos'}</div><div className={`accent-picker ${isCollapsed ? 'compact' : ''}`}><span className="accent-label"><Palette size={14} />{!isCollapsed && 'Color de acento'}</span><div className="accent-options">{Object.entries(accentOptions).map(([key, option]) => <button key={key} type="button" className={`accent-swatch ${accent === key ? 'selected' : ''}`} style={{ '--swatch': option.light }} onClick={() => setAccent(key)} aria-label={`Elegir color ${option.label}`} aria-pressed={accent === key} title={option.label} />)}</div></div><motion.button className="theme-toggle" onClick={toggleTheme} aria-label="Cambiar tema" whileTap={{ scale: .9 }}>{isDark ? <Sun size={16} /> : <Moon size={16} />}{!isCollapsed && (isDark ? 'Modo claro' : 'Modo oscuro')}</motion.button><motion.button className="text-button" onClick={handleSignOut} whileTap={{ x: 2 }}><LogOut size={15} />{!isCollapsed && 'Cerrar sesión'}</motion.button></div>
     </motion.aside>
     <motion.main className="main-content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .3, delay: .08 }}>
       <header className="page-header"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-subtitle">{subtitle}</p></div><div className="header-actions">{actions}<div className="user-chip"><span className="avatar">{user?.name?.split(' ').map((word) => word[0]).join('').slice(0, 2)}</span><span><strong>{user?.name}</strong><small>{isHr ? 'RRHH · Administradora' : user?.department}</small></span></div></div></header>
