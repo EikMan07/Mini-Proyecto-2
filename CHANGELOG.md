@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **workflow:** conecta solicitudes con rrhh
+  Agrega fechas reales, aprobación y rechazo de solicitudes, bandeja de comprobantes y persistencia local preparada para base de datos.
+
 - **attendance:** agrega marca de salida
   Añade cierre de jornada, persistencia de entrada y salida para la demo y visualización administrativa.
 

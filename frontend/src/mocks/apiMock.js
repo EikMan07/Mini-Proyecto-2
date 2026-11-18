@@ -1,3 +1,5 @@
+import { getLocalDocuments, getLocalRequests, saveLocalDocument, saveLocalRequest, updateLocalRequest } from '../services/workflowService';
+
 const wait = (milliseconds = 280) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 const users = {
@@ -39,10 +41,11 @@ const baseTrend = [
 ];
 
 export const getMockUser = (role) => users[role === 'rrhh' ? 'hr' : 'employee'];
+const localPending = () => getLocalRequests().filter((request) => request.status === 'Pendiente').map((request) => ({ id: request.id, person: request.person, type: request.type, department: request.department, age: request.createdAt || 'Ahora', overdue: false, request }));
 
 export const apiMock = {
   async login({ role }) { await wait(); return { token: `demo-token-${role}`, user: getMockUser(role) }; },
-  async getEmployeeSummary() { await wait(180); const summary = structuredClone(employeeSummary); summary.attendanceToday = getAttendanceRecord(); return summary; },
+  async getEmployeeSummary() { await wait(180); const summary = structuredClone(employeeSummary); summary.attendanceToday = getAttendanceRecord(); const ownRequests = getLocalRequests(); summary.requests = [...ownRequests, ...summary.requests.filter((item) => !ownRequests.some((request) => request.id === item.id))]; return summary; },
   async askChat(question) {
     await wait(900);
     const normalized = question.toLowerCase();
@@ -83,7 +86,9 @@ export const apiMock = {
     localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(result));
     return result;
   },
-  async submitRequest(payload) { await wait(500); return { id: `REQ-${Math.floor(Math.random() * 100) + 300}`, ...payload, status: 'Pendiente', createdAt: 'Ahora' }; },
+  async submitRequest(payload) { await wait(500); const request = { id: `REQ-${Date.now()}`, person: 'Kendall Vargas', department: 'Producto', ...payload, status: 'Pendiente', createdAt: 'Ahora', submittedAt: new Date().toISOString() }; saveLocalRequest(request); return request; },
+  async updateRequestStatus(id, status, reviewNote = '') { await wait(300); return updateLocalRequest(id, status, reviewNote); },
+  async uploadDocument(file) { await wait(500); const document = { id: `DOC-${Date.now()}`, name: file.name, size: file.size, type: file.type, person: 'Kendall Vargas', status: 'Pendiente', uploadedAt: new Date().toISOString() }; saveLocalDocument(document); return document; },
   async getDailyReport(date) {
     await wait(360);
     return {
@@ -95,12 +100,12 @@ export const apiMock = {
         { label: 'Resolución del chatbot', value: '86%', detail: 'sin escalamiento', trend: '+6.4% vs. semana anterior', tone: 'success' },
       ], trend: baseTrend, topics: [
         { topic: 'Teletrabajo y marcas', count: 86 }, { topic: 'Permisos y licencias', count: 61 }, { topic: 'Beneficios médicos', count: 48 }, { topic: 'Vacaciones', count: 39 }, { topic: 'Desempeño', count: 27 },
-      ], pending: [
+      ], pending: [...localPending(),
         { id: 'REQ-291', person: 'Daniela Solís', type: 'Incapacidad CCSS', department: 'Operaciones', age: '4 días', overdue: true },
         { id: 'REQ-284', person: 'Kendall Vargas', type: 'Vacaciones', department: 'Producto', age: '1 día', overdue: false },
         { id: 'REQ-278', person: 'Álvaro Jiménez', type: 'Permiso de estudio', department: 'Ventas', age: '6 días', overdue: true },
         { id: 'REQ-276', person: 'Sofía Castro', type: 'Permiso personal', department: 'Producto', age: '2 días', overdue: false },
-      ], unresolved: ['¿Existe un bono por mascotas?', '¿Puedo conocer el salario de otra persona?', '¿Cómo se solicita una excepción de horario?'],
+      ], unresolved: ['¿Existe un bono por mascotas?', '¿Puedo conocer el salario de otra persona?', '¿Cómo se solicita una excepción de horario?'], documents: getLocalDocuments(),
       history: ['2025-06-13', '2025-06-12', '2025-06-11', '2025-06-10'],
       attendance: [{ person: 'Kendall Vargas', department: 'Producto', checkedAt: getAttendanceRecord().checkedAt, checkedOutAt: getAttendanceRecord().checkedOutAt, status: getAttendanceRecord().status }],
       details: {

@@ -3,6 +3,38 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #23]
+**IndicaciÃ³n / Tarea:**
+> Hacer reales las vacaciones, solicitudes y comprobantes, con revisiÃ³n administrativa y diseÃ±o responsive.
+
+### 1. Archivos Afectados
+- `frontend/src/services/workflowService.js` (Creado)
+- `frontend/src/services/api.js` (Modificado)
+- `frontend/src/mocks/apiMock.js` (Modificado)
+- `frontend/src/components/LeaveRequestModal/LeaveRequestModal.jsx` (Modificado)
+- `frontend/src/components/AttendanceCard/AttendanceCard.jsx` (Modificado)
+- `frontend/src/components/RequestReviewPanel/RequestReviewPanel.jsx` (Creado)
+- `frontend/src/components/DocumentsInbox/DocumentsInbox.jsx` (Creado)
+- `frontend/src/pages/HrDashboardPage/HrDashboardPage.jsx` (Modificado)
+- `frontend/src/pages/EmployeePortalPage/EmployeePortalPage.jsx` (Modificado)
+- `frontend/src/index.css` (Modificado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se reemplazÃ³ el campo libre de fechas por fechas `Desde` y `Hasta` reales.
+- Se calcula el nÃºmero de dÃ­as solicitados y se envÃ­a junto con la solicitud.
+- Las solicitudes demo se persisten localmente y llegan a la bandeja de RRHH.
+- RRHH puede aprobar o rechazar solicitudes mediante el contrato `PATCH /api/requests/:id/status`.
+- Se agregÃ³ la carga real de comprobantes mediante `POST /api/documents` y una bandeja administrativa de documentos.
+- Se reorganizaron derechos laborales y calendario para quedar debajo del contenido principal en escritorio y apilarse en mÃ³vil.
+- Se agregÃ³ la capa `workflowService` para reemplazar `localStorage` por base de datos sin cambiar los componentes cuando exista backend.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+Se implementÃ³ el flujo colaborador → RRHH para solicitudes, vacaciones y comprobantes. La demo ya conserva los datos y permite revisar estados; en producciÃ³n quedan definidos los endpoints para persistir todo en la base de datos.
+
+---
+
 ## [Entrada #22]
 **IndicaciÃ³n / Tarea:**
 > Permitir marcar la salida despuÃ©s de la entrada y mostrar el dato real en RRHH.

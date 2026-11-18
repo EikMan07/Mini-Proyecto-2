@@ -80,11 +80,10 @@ export default function EmployeePortalPage() {
               <span>✦</span>
               <div><strong>Una buena pregunta abre una puerta</strong><p>El asistente responde con políticas vigentes y te muestra la fuente para que puedas leer más.</p></div>
             </motion.section>
-            <RightsCenter />
-            <WorkCalendar />
           </motion.aside>
         </motion.div>
       </LayoutGroup>
+      <div className="employee-resource-grid"><RightsCenter /><WorkCalendar /></div>
 
       {isModalOpen && <LeaveRequestModal onClose={() => setIsModalOpen(false)} onCreated={addRequest} />}
     </AppShell>
