@@ -3,6 +3,42 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #6]
+**Indicación / Tarea:**
+> Manda todo al repositorio de GitHub con git add, git commit y git push en mi rama feature-kendall.
+
+### 1. Archivos Afectados
+- `bitacora_agente.md` (Modificado)
+- `CHANGELOG.md` (Modificado por la sincronización documental)
+
+### 2. Resumen de Acciones Técnicas
+- Se verificó que la rama activa es `feature-kendall` y sigue a `origin/feature-kendall`.
+- Se prepararon todos los cambios pendientes con `git add`.
+- Se generó un commit convencional y se publicó con `git push origin feature-kendall`.
+
+### 3. Respuesta Completa del Agente
+Todos los cambios pendientes fueron enviados al repositorio remoto en la rama `feature-kendall`.
+
+---
+
+## [Entrada #5]
+**Indicación / Tarea:**
+> Levanta el frontend para verlo.
+
+### 1. Archivos Afectados
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones Técnicas
+- Se inició el servidor Vite del frontend.
+- Se verificó que la aplicación responde correctamente.
+- El puerto 5173 estaba ocupado por otra aplicación local, por lo que Vite quedó disponible en el puerto 5174.
+- Se abrió `http://127.0.0.1:5174` en Chrome y se verificaron la pantalla de login y el portal del colaborador con datos demo.
+
+### 3. Respuesta Completa del Agente
+El frontend Kendall quedó levantado y visible en Chrome en `http://127.0.0.1:5174`. Se confirmó que cargan correctamente el login y el portal del colaborador.
+
+---
+
 ## [Entrada #4]
 **Indicación / Tarea:**
 > Publicar por partes el trabajo realizado en la rama feature-kendall.
