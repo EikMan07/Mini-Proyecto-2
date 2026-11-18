@@ -1,2 +1,4 @@
+import { motion } from 'framer-motion';
 import KpiCard from '../KpiCard/KpiCard';
-export default function KpiGrid({ items }) { return <div className="kpi-grid">{items.map((item) => <KpiCard {...item} key={item.label} />)}</div>; }
+import { dashboardVariants } from '../../lib/motion';
+export default function KpiGrid({ items = [] }) { return <motion.div className="kpi-grid" variants={dashboardVariants}>{items.map((item, index) => <KpiCard {...item} index={index} key={item.label} />)}</motion.div>; }

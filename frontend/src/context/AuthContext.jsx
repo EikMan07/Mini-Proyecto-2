@@ -7,10 +7,14 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) setSession(JSON.parse(stored));
+    if (stored) {
+      try { setSession(JSON.parse(stored)); }
+      catch { localStorage.removeItem(STORAGE_KEY); }
+    }
     setIsLoading(false);
   }, []);
 
@@ -21,8 +25,13 @@ export function AuthProvider({ children }) {
     return nextSession;
   };
 
-  const signOut = () => { localStorage.removeItem(STORAGE_KEY); setSession(null); };
-  const value = useMemo(() => ({ ...session, isAuthenticated: Boolean(session), signIn, signOut, isLoading }), [session, isLoading]);
+  const signOut = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setIsSigningOut(true);
+    setSession(null);
+    window.setTimeout(() => setIsSigningOut(false), 320);
+  };
+  const value = useMemo(() => ({ ...session, isAuthenticated: Boolean(session), signIn, signOut, isLoading, isSigningOut }), [session, isLoading, isSigningOut]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
