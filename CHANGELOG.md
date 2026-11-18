@@ -33,6 +33,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Fixed
+- **frontend:** elimina flash al cerrar sesión
+  Añade una transición opaca de salida y navegación replace para evitar mostrar brevemente la pantalla protegida.
+
 - **frontend:** ajusta responsive de jornada
   Corrige la composición responsive de asistencia, hora real, botón de entrada, sidebar, grids y tarjetas para tablet y móvil.
 

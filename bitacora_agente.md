@@ -3,6 +3,27 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #15]
+**IndicaciÃ³n / Tarea:**
+> Eliminar el flash visual que aparece al cerrar sesiÃ³n.
+
+### 1. Archivos Afectados
+- `frontend/src/components/AppShell/AppShell.jsx`
+- `frontend/src/index.css`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se agregÃ³ estado de cierre de sesiÃ³n para bloquear doble activaciÃ³n.
+- Se incorporÃ³ una pantalla opaca animada de salida con `role="status"`.
+- Se espera brevemente a que la transiciÃ³n se pinte antes de limpiar la sesiÃ³n y navegar.
+- La navegaciÃ³n usa `replace: true` para evitar volver al portal con el botÃ³n AtrÃ¡s.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+El cierre de sesiÃ³n ahora presenta una salida controlada y evita mostrar durante un instante la pantalla protegida anterior.
+
+---
+
 ## [Entrada #14]
 **IndicaciÃ³n / Tarea:**
 > Acomodar toda la interfaz para que sea responsive y se visualice correctamente en diferentes tamaÃ±os.
