@@ -49,7 +49,13 @@ export const apiMock = {
     }
     return { answer: 'La jornada y las marcas se registran diariamente según tu horario asignado. Si trabajas en modalidad remota, debes marcar el inicio y cierre desde el canal habilitado. Las horas extra requieren autorización previa de tu jefatura.', agentUsed: 'HR Policy Agent', citations, escalated: false, latencyMs: 624 };
   },
-  async checkIn() { await wait(420); return { status: 'registrada', checkedAt: '08:42 a. m.' }; },
+  async checkIn() {
+    await wait(420);
+    return {
+      status: 'registrada',
+      checkedAt: new Intl.DateTimeFormat('es-CR', { hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date()),
+    };
+  },
   async submitRequest(payload) { await wait(500); return { id: `REQ-${Math.floor(Math.random() * 100) + 300}`, ...payload, status: 'Pendiente', createdAt: 'Ahora' }; },
   async getDailyReport(date) {
     await wait(360);

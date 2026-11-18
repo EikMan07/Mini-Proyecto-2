@@ -30,6 +30,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Fixed
+- **frontend:** corrige hora de asistencia demo
+  Evita mostrar una hora fija como entrada registrada; el mock usa la hora actual solo después de marcar asistencia.
+
 
 ### Changed
 

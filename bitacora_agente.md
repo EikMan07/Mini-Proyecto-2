@@ -3,6 +3,25 @@ Registro continuo de solicitudes de usuario, modificaciones técnicas y respuest
 
 ---
 
+## [Entrada #11]
+**IndicaciÃ³n / Tarea:**
+> Corregir la hora de entrada mostrada como registrada cuando el usuario no la ha marcado.
+
+### 1. Archivos Afectados
+- `frontend/src/mocks/apiMock.js`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones TÃ©cnicas
+- Se eliminÃ³ la hora fija `08:42 a. m.` del mock de asistencia.
+- El mock ahora genera la hora real del dispositivo Ãºnicamente al ejecutar `checkIn()`.
+- La carga inicial conserva `Entrada pendiente` hasta que el usuario pulse `Marcar entrada`.
+- `npm test -- --passWithNoTests` y `npm run build` finalizaron correctamente.
+
+### 3. Respuesta Completa del Agente
+La interfaz ya no presentarÃ¡ una hora demo como si fuera una entrada real. DespuÃ©s de actualizar el portal, la tarjeta mostrarÃ¡ la hora actual sin confirmar y solo cambiarÃ¡ a `Entrada registrada` cuando se pulse la acciÃ³n.
+
+---
+
 ## [Entrada #10]
 **IndicaciÃ³n / Tarea:**
 > Sustituir la fecha y hora demo de la tarjeta de jornada por hora real e informaciÃ³n de ubicaciÃ³n.
