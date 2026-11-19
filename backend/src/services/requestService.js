@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const db = require('../models');
 const { ConflictError, NotFoundError, ValidationError } = require('../utils/errors');
 const { ETIQUETAS_ESTADO, ETIQUETAS_TIPO } = require('./employeeService');
+const { accrueWeeklyDays } = require('./vacationBalanceService');
 
 function obtenerHoyCostaRica() {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Costa_Rica' }).format(new Date());
@@ -96,35 +97,45 @@ async function crearSolicitud(colaboradorId, datos) {
 
   const diasSolicitados = calcularDiasInclusivos(datos.fecha_inicio, datos.fecha_fin);
 
-  if (datos.tipo === 'vacaciones') {
-    const saldo = await db.SaldoVacaciones.findOne({
-      where: { colaborador_id: colaboradorId, periodo: '2026' },
-    });
-    if (!saldo || saldo.dias_disponibles < diasSolicitados) {
-      throw new ValidationError(
-        `Saldo insuficiente de vacaciones para 2026 (disponibles: ${saldo ? saldo.dias_disponibles : 0}, solicitados: ${diasSolicitados}).`
-      );
+  const created = await db.sequelize.transaction(async (transaction) => {
+    if (datos.tipo === 'vacaciones') {
+      const saldo = await db.SaldoVacaciones.findOne({
+        where: { colaborador_id: colaboradorId, periodo: '2026' },
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (saldo) await accrueWeeklyDays(saldo, transaction);
+      if (!saldo || saldo.dias_disponibles < diasSolicitados) {
+        throw new ValidationError(
+          `Saldo insuficiente de vacaciones para 2026 (disponibles: ${saldo ? saldo.dias_disponibles : 0}, solicitados: ${diasSolicitados}).`
+        );
+      }
     }
-  }
 
-  const solicitud = await db.Solicitud.create({
-    colaborador_id: colaboradorId,
-    tipo: datos.tipo,
-    fecha_inicio: datos.fecha_inicio,
-    fecha_fin: datos.fecha_fin,
-    dias_solicitados: diasSolicitados,
-    motivo: datos.motivo || null,
-    estado: 'pendiente',
-    aprobador_id: null,
-    creada_en: new Date(),
+    const solicitud = await db.Solicitud.create({
+      colaborador_id: colaboradorId,
+      tipo: datos.tipo,
+      fecha_inicio: datos.fecha_inicio,
+      fecha_fin: datos.fecha_fin,
+      dias_solicitados: diasSolicitados,
+      motivo: datos.motivo || null,
+      estado: 'pendiente',
+      aprobador_id: null,
+      creada_en: new Date(),
+    }, { transaction });
+
+    return solicitud.toJSON();
   });
 
-  return enriquecerSolicitud(solicitud.toJSON());
+  return enriquecerSolicitud(created);
 }
 
 async function resolverSolicitud(solicitudId, aprobadorId, datos) {
   return db.sequelize.transaction(async (transaction) => {
-    const solicitud = await db.Solicitud.findByPk(solicitudId, { transaction });
+    const solicitud = await db.Solicitud.findByPk(solicitudId, {
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    });
     if (!solicitud) {
       throw new NotFoundError('Solicitud');
     }
@@ -143,19 +154,18 @@ async function resolverSolicitud(solicitudId, aprobadorId, datos) {
       const saldo = await db.SaldoVacaciones.findOne({
         where: { colaborador_id: solicitud.colaborador_id, periodo: '2026' },
         transaction,
+        lock: transaction.LOCK.UPDATE,
       });
+      if (saldo) await accrueWeeklyDays(saldo, transaction);
 
       if (!saldo || saldo.dias_disponibles < solicitud.dias_solicitados) {
         throw new ValidationError('El colaborador ya no cuenta con dias de vacaciones suficientes.');
       }
 
-      await saldo.update(
-        {
-          dias_tomados: saldo.dias_tomados + solicitud.dias_solicitados,
-          dias_disponibles: saldo.dias_disponibles - solicitud.dias_solicitados,
-        },
-        { transaction }
-      );
+      await saldo.update({
+        dias_tomados: saldo.dias_tomados + solicitud.dias_solicitados,
+        dias_disponibles: saldo.dias_disponibles - solicitud.dias_solicitados,
+      }, { transaction });
     }
 
     await solicitud.update(
