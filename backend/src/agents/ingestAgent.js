@@ -5,12 +5,21 @@ const path = require('path');
 const crypto = require('crypto');
 const db = require('../models');
 const driveService = require('../services/driveService');
-const { dividirEnChunks } = require('../utils/chunker');
+const { dividirEnChunks, extraerMetadatos } = require('../utils/chunker');
 const { generarEmbeddingsEnLote } = require('../services/embeddingService');
 const { AppError } = require('../utils/errors');
 
 const EXTENSIONES_SOPORTADAS = new Set(['.pdf', '.docx', '.xlsx', '.md', '.txt']);
 const RUTA_LOCAL_DEFAULT = path.resolve(__dirname, '../../../documentos_drive');
+
+function normalizarClave(valor = '') {
+  return String(valor || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
 
 function calcularHashBuffer(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex');
@@ -77,15 +86,29 @@ async function indexarDocumentoEnBD({
       transaction,
     });
 
-    // Si estamos indexando desde Google Drive real, reemplaza cualquier copia local previa del mismo título
+    // Si estamos indexando desde Google Drive real, reemplaza cualquier copia local previa del mismo título o archivo
     if (!String(driveFileId).startsWith('local:')) {
-      await db.FragmentoDocumento.destroy({
-        where: {
-          drive_file_id: { [db.Sequelize.Op.like]: 'local:%' },
-          documento_titulo: chunks[0].metadata.documento_titulo,
-        },
+      const claveTitulo = normalizarClave(chunks[0].metadata.documento_titulo);
+      const claveArchivo = normalizarClave(path.basename(nombreArchivo, path.extname(nombreArchivo)));
+      const locales = await db.FragmentoDocumento.findAll({
+        attributes: ['id', 'drive_file_id', 'documento_titulo'],
+        where: { drive_file_id: { [db.Sequelize.Op.like]: 'local:%' } },
         transaction,
       });
+      const idsLocalesReemplazar = locales
+        .filter((loc) => {
+          const ct = normalizarClave(loc.documento_titulo);
+          const cf = normalizarClave(path.basename(String(loc.drive_file_id).replace(/^local:/, ''), path.extname(String(loc.drive_file_id))));
+          return ct === claveTitulo || (claveArchivo && cf === claveArchivo);
+        })
+        .map((loc) => loc.id);
+
+      if (idsLocalesReemplazar.length > 0) {
+        await db.FragmentoDocumento.destroy({
+          where: { id: { [db.Sequelize.Op.in]: idsLocalesReemplazar } },
+          transaction,
+        });
+      }
     }
 
     const registros = chunks.map((chunk, idx) => ({
@@ -113,25 +136,85 @@ async function indexarDocumentoEnBD({
 /**
  * Sincroniza políticas desde Google Drive API usando changes.list y embeddings de Gemini.
  */
-async function sincronizarDesdeDrive() {
+async function sincronizarDesdeDrive({ forzarCompleto = false } = {}) {
   const {
     drive,
+    folderId,
+    sincronizacionCompleta,
     state,
     archivosActivos,
     agregadosOActualizados,
     eliminados,
     nuevoPageToken,
-  } = await driveService.obtenerCambiosDrive();
+  } = await driveService.obtenerCambiosDrive({ forzarCompleto });
 
   let fragmentosInsertados = 0;
   let archivosProcesados = 0;
   let archivosEliminados = 0;
+  const archivosLeidos = [];
 
-  for (const fileId of eliminados) {
-    await db.FragmentoDocumento.destroy({ where: { drive_file_id: fileId } });
-    delete archivosActivos[fileId];
-    archivosEliminados += 1;
-  }
+  await db.sequelize.transaction(async (transaction) => {
+    for (const fileId of eliminados) {
+      await db.FragmentoDocumento.destroy({ where: { drive_file_id: fileId }, transaction });
+      delete archivosActivos[fileId];
+      archivosEliminados += 1;
+    }
+
+    if (sincronizacionCompleta) {
+      const nombresCompletos = new Set(
+        agregadosOActualizados.map((f) => String(f.name || '').toLowerCase())
+      );
+      const idsPermitidos = agregadosOActualizados
+        .filter((f) => {
+          const lower = String(f.name || '').toLowerCase();
+          return !(lower.endsWith('.md') && nombresCompletos.has(lower.slice(0, -3) + '.docx'));
+        })
+        .map((f) => f.id);
+
+      const eliminadosAjenos = await db.FragmentoDocumento.destroy({
+        where: {
+          drive_file_id:
+            idsPermitidos.length > 0
+              ? {
+                  [db.Sequelize.Op.notIn]: idsPermitidos,
+                  [db.Sequelize.Op.notLike]: 'local:%',
+                }
+              : { [db.Sequelize.Op.notLike]: 'local:%' },
+        },
+        transaction,
+      });
+      if (eliminadosAjenos > 0) {
+        archivosEliminados += eliminadosAjenos;
+      }
+
+      // Elimina únicamente fragmentos locales cuyo archivo equivalente ya exista en Drive
+      const clavesArchivosDrive = new Set(
+        agregadosOActualizados.map((f) =>
+          normalizarClave(path.basename(String(f.name || ''), path.extname(String(f.name || ''))))
+        )
+      );
+      const localesExistentes = await db.FragmentoDocumento.findAll({
+        attributes: ['id', 'drive_file_id'],
+        where: { drive_file_id: { [db.Sequelize.Op.like]: 'local:%' } },
+        transaction,
+      });
+      const idsLocalesYaEnDrive = localesExistentes
+        .filter((loc) => {
+          const base = path.basename(
+            String(loc.drive_file_id).replace(/^local:/, ''),
+            path.extname(String(loc.drive_file_id))
+          );
+          return clavesArchivosDrive.has(normalizarClave(base));
+        })
+        .map((loc) => loc.id);
+      if (idsLocalesYaEnDrive.length > 0) {
+        await db.FragmentoDocumento.destroy({
+          where: { id: { [db.Sequelize.Op.in]: idsLocalesYaEnDrive } },
+          transaction,
+        });
+      }
+    }
+  });
 
   const nombresDrive = new Set(
     agregadosOActualizados.map((f) => String(f.name || '').toLowerCase())
@@ -146,7 +229,16 @@ async function sincronizarDesdeDrive() {
 
     const hashActual = file.md5Checksum || file.modifiedTime || '';
     const previo = archivosActivos[file.id];
-    if (previo && previo.hash === hashActual && hashActual !== '') {
+    const enlaceDrive = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
+
+    if (!forzarCompleto && previo && previo.hash === hashActual && hashActual !== '') {
+      archivosLeidos.push({
+        drive_file_id: file.id,
+        nombre: file.name,
+        enlace_drive: enlaceDrive,
+        fragmentos: previo.fragmentos || 0,
+        estado: 'sin_cambios',
+      });
       continue;
     }
 
@@ -156,7 +248,7 @@ async function sincronizarDesdeDrive() {
       nombreArchivo: file.name,
       texto,
       formato,
-      enlaceDrive: file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`,
+      enlaceDrive,
       hashArchivo: hashActual,
     });
 
@@ -164,10 +256,24 @@ async function sincronizarDesdeDrive() {
       nombre: file.name,
       hash: hashActual,
       modifiedTime: file.modifiedTime || null,
+      enlace_drive: enlaceDrive,
       fragmentos: totalChunks,
     };
     fragmentosInsertados += totalChunks;
     archivosProcesados += 1;
+
+    console.log(
+      `[Drive Sync] Carpeta=${folderId} | Archivo=${file.name} | id=${file.id} | fragmentos=${totalChunks}`
+    );
+
+    archivosLeidos.push({
+      drive_file_id: file.id,
+      nombre: file.name,
+      formato,
+      enlace_drive: enlaceDrive,
+      fragmentos: totalChunks,
+      estado: 'indexado',
+    });
   }
 
   await state.update({
@@ -176,11 +282,16 @@ async function sincronizarDesdeDrive() {
     archivos_activos: archivosActivos,
   });
 
+  const totalFragmentosBd = await db.FragmentoDocumento.count();
+
   return {
     origen: 'google_drive',
+    folder_id: folderId,
     archivos_procesados: archivosProcesados,
     archivos_eliminados: archivosEliminados,
     fragmentos_indexados: fragmentosInsertados,
+    total_fragmentos_bd: totalFragmentosBd,
+    archivos_leidos: archivosLeidos,
     page_token: nuevoPageToken,
   };
 }
@@ -203,6 +314,14 @@ async function sincronizarCarpetaLocal(rutaCarpeta = RUTA_LOCAL_DEFAULT, { forza
   const archivosActivos = { ...(state.archivos_activos || {}) };
   const idsPresentes = new Set();
 
+  // Conserva los documentos que ya provienen de Google Drive sin duplicarlos como locales
+  const existentesDrive = await db.FragmentoDocumento.findAll({
+    attributes: ['documento_titulo'],
+    where: { drive_file_id: { [db.Sequelize.Op.notLike]: 'local:%' } },
+    group: ['documento_titulo'],
+  });
+  const titulosEnDrive = new Set(existentesDrive.map((d) => normalizarClave(d.documento_titulo)));
+
   let archivosProcesados = 0;
   let archivosOmitidos = 0;
   let fragmentosIndexados = 0;
@@ -211,22 +330,36 @@ async function sincronizarCarpetaLocal(rutaCarpeta = RUTA_LOCAL_DEFAULT, { forza
   for (const rutaArchivo of archivos) {
     const rel = path.relative(rutaCarpeta, rutaArchivo).replace(/\\/g, '/');
     const driveFileId = `local:${rel}`;
-    idsPresentes.add(driveFileId);
 
     const buffer = fs.readFileSync(rutaArchivo);
     const hash = calcularHashBuffer(buffer);
     const previo = archivosActivos[driveFileId];
-
-    if (!forzar && previo && previo.hash === hash) {
-      archivosOmitidos += 1;
-      continue;
-    }
 
     const { texto, formato } = await driveService.extraerTextoDeBuffer(
       buffer,
       '',
       path.basename(rutaArchivo)
     );
+    const meta = extraerMetadatos(texto, {
+      documento_titulo: path.basename(rutaArchivo, path.extname(rutaArchivo)).replace(/_/g, ' '),
+    });
+
+    if (titulosEnDrive.has(normalizarClave(meta.documento_titulo))) {
+      await db.FragmentoDocumento.destroy({ where: { drive_file_id: driveFileId } });
+      delete archivosActivos[driveFileId];
+      archivosOmitidos += 1;
+      continue;
+    }
+
+    idsPresentes.add(driveFileId);
+
+    if (!forzar && previo && previo.hash === hash) {
+      const countExistente = await db.FragmentoDocumento.count({ where: { drive_file_id: driveFileId } });
+      if (countExistente > 0) {
+        archivosOmitidos += 1;
+        continue;
+      }
+    }
 
     const numChunks = await indexarDocumentoEnBD({
       driveFileId,

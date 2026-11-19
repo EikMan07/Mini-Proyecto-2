@@ -98,7 +98,7 @@ function clasificarRapido(pregunta) {
 
   // Dato personal inequívoco (#2 saldo restante, #18 estado solicitud, nómina, evaluación)
   if (
-    /\b(me\s+quedan(\s+disponibles)?|mi\s+saldo(\s+de\s+vacaciones)?|estado\s+de\s+mi\s+solicitud|mi\s+solicitud\s+de\s+permiso|mi\s+proximo\s+pago|cuando\s+me\s+pagan|evaluacion\s+de\s+desempeno|mis\s+(propias\s+)?incapacidades|mis\s+asistencias)\b/.test(
+    /\b(tengo\s+disponibles|cuantos\s+dias\s+de\s+vacaciones\s+tengo|me\s+quedan(\s+disponibles)?|mi\s+saldo(\s+de\s+vacaciones)?|estado\s+de\s+mi\s+solicitud|mi\s+solicitud\s+de\s+permiso|mi\s+proximo\s+pago|cuando\s+me\s+pagan|evaluacion\s+de\s+desempeno|mis\s+(propias\s+)?incapacidades|mis\s+asistencias)\b/.test(
       t
     )
   ) {
@@ -110,9 +110,9 @@ function clasificarRapido(pregunta) {
     return { intencion: 'dato_personal', tema };
   }
 
-  // Política general inequívoca ("me corresponden al año", CCSS, aguinaldo, preaviso, cesantía, feriados, Ley 8968, beneficios)
+  // Política general inequívoca ("me corresponden al año", CCSS, aguinaldo, preaviso, cesantía, feriados, Ley 8968, duelo, justificaciones, beneficios, acoso)
   if (
-    /\b(me\s+corresponden\s+al\s+a[nñ]o|minimo\s+legal|feriados?\s+de\s+ley|aguinaldo|preaviso|cesantia|periodo\s+de\s+prueba|derechos\s+arco|ley\s+8968|enfermedad\s+comun|boleta\s+de\s+incapacidad|onboarding|liquidacion|deducciones|cargas\s+sociales|banco\s+popular|ivm|maternidad|accidente\s+laboral|ins|teletrabajo|clinica\s+privada|refrendo|compensar\s+en\s+dinero|acumulo\s+mas\s+de\s+20|pasivo|bono\s+mensual|mascotas|guarderia|gimnasio|subsidio\s+de|anticipa[a-z]+\s+.*vacaciones|solicitar\s+vacaciones|deposita\s+el\s+salario)\b/.test(
+    /\b(me\s+corresponden\s+al\s+a[nñ]o|minimo\s+legal|feriados?(\s+de\s+ley)?|primero\s+de\s+diciembre|1\s+de\s+diciembre|abolicion|asueto|trabajar\s+el\s+|aguinaldo|preaviso|cesantia|periodo\s+de\s+prueba|derechos\s+arco|ley\s+8968|enfermedad\s+comun|boleta\s+de\s+incapacidad|onboarding|liquidacion|deducciones|cargas\s+sociales|banco\s+popular|ivm|maternidad|paternidad|ley\s+10211|fallecimiento|duelo|matrimonio|justificaci[oó]n(?:es)?|48\s+horas|citaci[oó]n\s+judicial|fuerza\s+mayor|accidente\s+laboral|ins|teletrabajo|ley\s+9738|horas?\s+extra|jornada\s+(diurna|mixta|nocturna)|asociaci[oó]n\s+solidarista|seguro\s+m[eé]dico|capacitaci[oó]n|evaluaci[oó]n\s+de\s+desempe[nñ]o|acoso\s+(sexual|laboral)|ley\s+7476|clinica\s+privada|refrendo|compensar\s+en\s+dinero|acumulo\s+mas\s+de\s+20|pasivo|bono\s+mensual|mascotas|guarderia|gimnasio|subsidio\s+de|anticipa[a-z]+\s+.*vacaciones|solicitar\s+vacaciones|deposita\s+el\s+salario)\b/.test(
       t
     ) &&
     !/\b(mi\s+saldo|me\s+quedan|tengo\s+disponibles|mi\s+solicitud|mis\s+incapacidades)\b/.test(t)

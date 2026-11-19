@@ -1,0 +1,100 @@
+.attendance-count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.attendance-toolbar {
+  padding: 0 28px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.attendance-search-box {
+  position: relative;
+  flex: 1 1 260px;
+  min-width: 210px;
+}
+
+.attendance-search-box svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.attendance-search-box input {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.attendance-search-box input:focus,
+.attendance-filters select:focus {
+  border-color: var(--coral);
+}
+
+.attendance-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.attendance-filters select {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 0.84rem;
+  outline: none;
+}
+
+html[data-theme='dark'] .attendance-count-badge {
+  background: #142638;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+html[data-theme='dark'] .attendance-search-box input,
+html[data-theme='dark'] .attendance-filters select {
+  background: #0d1a28;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+html[data-theme='dark'] .attendance-filters select:not(.active) {
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .attendance-toolbar {
+    padding: 0 20px 16px;
+  }
+
+  .attendance-filters {
+    width: 100%;
+  }
+
+  .attendance-filters select {
+    flex: 1 1 180px;
+  }
+}

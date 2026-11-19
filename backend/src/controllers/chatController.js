@@ -5,11 +5,19 @@ const db = require('../models');
 
 exports.preguntar = async (req, res, next) => {
   try {
+    const pregunta = req.body.pregunta || req.body.question;
     const resultado = await orchestrator.procesarConsulta({
-      pregunta: req.body.pregunta,
+      pregunta,
       usuarioAutenticado: req.usuario,
     });
-    return res.status(200).json(resultado);
+
+    return res.status(200).json({
+      ...resultado,
+      agentUsed: resultado.agente,
+      latencyMs: resultado.latencia_ms,
+      restricted: resultado.intencion === 'restringida',
+      outOfScope: resultado.intencion === 'fuera_de_alcance',
+    });
   } catch (error) {
     return next(error);
   }

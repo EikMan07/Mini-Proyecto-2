@@ -5,7 +5,8 @@ const path = require('path');
 const { Op } = require('sequelize');
 const db = require('../models');
 const { generarConGemini } = require('../services/llmService');
-const { NotFoundError } = require('../utils/errors');
+const { ETIQUETAS_TIPO } = require('../services/employeeService');
+const { formatearDocumento } = require('../controllers/documentController');
 
 const PROMPT_PATH = path.resolve(__dirname, '../prompts/analystAgent.md');
 let promptCache = null;
@@ -430,6 +431,215 @@ async function generarReporteDiario(fechaBase = new Date()) {
   };
 }
 
+function formatearDiaGrafica(fechaStr) {
+  if (!fechaStr) return '';
+  const d = new Date(`${String(fechaStr).slice(0, 10)}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return String(fechaStr);
+  return d.toLocaleDateString('es-CR', { day: '2-digit', month: 'short' });
+}
+
+function formatearHoraCorta(horaStr) {
+  if (!horaStr) return null;
+  const partes = String(horaStr).split(':');
+  return partes.length >= 2 ? `${partes[0]}:${partes[1]}` : String(horaStr);
+}
+
+async function construirDashboard(reporteJson, historialFechas) {
+  const datos = reporteJson.datos_json || {};
+  const fechaReporte = reporteJson.fecha || formatoFecha(new Date());
+  const hace3Dias = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+
+  const [solicitudesLive, comprobantesLive, asistenciasLive] = await Promise.all([
+    db.Solicitud.findAll({
+      where: { estado: 'pendiente' },
+      include: [
+        {
+          model: db.Colaborador,
+          as: 'colaborador',
+          attributes: ['id', 'nombre', 'email'],
+          include: [{ model: db.Departamento, as: 'departamento', attributes: ['nombre'] }],
+        },
+      ],
+      order: [['creada_en', 'ASC']],
+      limit: 50,
+    }),
+    db.ComprobanteMedico.findAll({
+      include: [{ model: db.Colaborador, as: 'colaborador', attributes: ['id', 'nombre', 'email'] }],
+      order: [['created_at', 'DESC']],
+      limit: 30,
+    }),
+    db.Asistencia.findAll({
+      where: { fecha: fechaReporte },
+      include: [
+        {
+          model: db.Colaborador,
+          as: 'colaborador',
+          attributes: ['id', 'nombre', 'apellidos'],
+          include: [{ model: db.Departamento, as: 'departamento', attributes: ['nombre'] }],
+        },
+      ],
+      order: [['updated_at', 'DESC']],
+      limit: 50,
+    }),
+  ]);
+
+  const totalColab = Math.max(1, Number(datos.movimientos_y_rotacion?.total_colaboradores ?? 1));
+  const ausenciasTotal = Number(datos.ausencias_hoy?.total ?? 0);
+  const pctAusencias = ((ausenciasTotal / totalColab) * 100).toFixed(1);
+  const vacacionesRiesgo = Number(datos.riesgo_pasivo_vacaciones?.colaboradores_mas_20_dias ?? 0);
+  const pctChatbot = Number(datos.uso_chatbot?.porcentaje_resuelto_sin_escalar ?? 0);
+  const incActivas = Number(datos.incapacidades?.activas_hoy ?? 0);
+  const incDias = Number(datos.incapacidades?.dias_acumulados_mes ?? 0);
+  const ingresosMes = Number(datos.movimientos_y_rotacion?.ingresos_mes ?? 0);
+  const salidasMes = Number(datos.movimientos_y_rotacion?.salidas_mes ?? 0);
+  const tasaRotacion = Number(datos.movimientos_y_rotacion?.tasa_rotacion_mensual_pct ?? 0);
+  const consultasAyer = Number(datos.uso_chatbot?.consultas_dia_anterior ?? 0);
+  const latenciaPromedio = Number(datos.uso_chatbot?.latencia_promedio_ms ?? 0);
+
+  const atrasadasLive = solicitudesLive.filter((s) => new Date(s.creada_en) < hace3Dias).length;
+
+  const pending = solicitudesLive.map((s) => {
+    const diasEspera = Math.max(
+      0,
+      Math.floor((Date.now() - new Date(s.creada_en).getTime()) / (24 * 60 * 60 * 1000))
+    );
+    const tipoLabel = ETIQUETAS_TIPO[s.tipo] || s.tipo;
+    const person = s.colaborador?.nombre || 'Colaborador';
+    const department = s.colaborador?.departamento?.nombre || 'Sin departamento';
+    const overdue = new Date(s.creada_en) < hace3Dias;
+    const reqObj = {
+      id: s.id,
+      person,
+      type: tipoLabel,
+      department,
+      startDate: s.fecha_inicio,
+      endDate: s.fecha_fin,
+      dates: `${s.fecha_inicio} → ${s.fecha_fin}`,
+      days: s.dias_solicitados,
+      reason: s.motivo || '',
+    };
+
+    return {
+      id: s.id,
+      person,
+      type: tipoLabel,
+      department,
+      age: diasEspera === 0 ? 'Hoy' : diasEspera === 1 ? '1 día' : `${diasEspera} días`,
+      overdue,
+      request: reqObj,
+    };
+  });
+
+  const trend = (datos.tendencia_30_dias || []).map((t) => ({
+    day: formatearDiaGrafica(t.fecha),
+    queries: Number(t.consultas ?? 0),
+    absences: Number(t.ausencias ?? 0),
+  }));
+
+  const topics = (datos.temas_y_brechas?.top_5_temas || []).map((t) => ({
+    topic: t.tema,
+    count: Number(t.total ?? 0),
+  }));
+
+  const unresolved = Array.from(
+    new Set(
+      (datos.temas_y_brechas?.preguntas_no_resueltas || []).map((u) =>
+        typeof u === 'string' ? u : u.pregunta
+      )
+    )
+  );
+
+  const attendance = asistenciasLive.map((a) => ({
+    person: a.colaborador?.nombre || 'Colaborador',
+    apellidos: a.colaborador?.apellidos || '',
+    department: a.colaborador?.departamento?.nombre || 'Sin departamento',
+    checkedAt: formatearHoraCorta(a.hora_entrada),
+    checkedOutAt: formatearHoraCorta(a.hora_salida),
+    status: a.hora_salida ? 'cerrada' : a.hora_entrada ? 'registrada' : 'pendiente',
+  }));
+
+  const porTipo = datos.ausencias_hoy?.por_tipo || {};
+
+  return {
+    date: fechaReporte,
+    summary: reporteJson.resumen_texto || '',
+    kpis: [
+      {
+        label: 'Ausentes hoy',
+        value: String(ausenciasTotal).padStart(2, '0'),
+        detail: `${pctAusencias}% de la plantilla`,
+        trend: `${Number(porTipo.incapacidad ?? 0)} por incapacidad`,
+        tone: ausenciasTotal > 0 ? 'warning' : 'success',
+      },
+      {
+        label: 'Solicitudes pendientes',
+        value: String(pending.length).padStart(2, '0'),
+        detail: `${atrasadasLive} llevan más de 3 días`,
+        trend: atrasadasLive > 0 ? 'Requiere revisión' : 'Al día',
+        tone: atrasadasLive > 0 ? 'accent' : 'success',
+      },
+      {
+        label: 'Vacaciones acumuladas',
+        value: String(vacacionesRiesgo).padStart(2, '0'),
+        detail: 'colaboradores en riesgo',
+        trend: '+20 días disponibles',
+        tone: vacacionesRiesgo > 0 ? 'critical' : 'success',
+      },
+      {
+        label: 'Resolución del chatbot',
+        value: `${pctChatbot}%`,
+        detail: 'sin escalamiento',
+        trend: `Latencia ${latenciaPromedio} ms`,
+        tone: 'success',
+      },
+    ],
+    trend,
+    topics,
+    pending,
+    unresolved,
+    documents: comprobantesLive.map(formatearDocumento),
+    history: historialFechas.includes(fechaReporte) ? historialFechas : [fechaReporte, ...historialFechas],
+    attendance,
+    details: {
+      absences: {
+        total: ausenciasTotal,
+        detail: `${pctAusencias}% de la plantilla`,
+        breakdown: {
+          Vacaciones: Number(porTipo.vacaciones ?? 0),
+          Permisos: Number(porTipo.permiso ?? 0),
+          Incapacidades: Number(porTipo.incapacidad ?? 0),
+        },
+      },
+      medical: {
+        total: incActivas,
+        detail: `${incDias} días acumulados durante el mes`,
+        status: incActivas > 0 ? `${incActivas} activas hoy` : 'Sin incapacidades activas',
+        tone: incActivas > 0 ? 'warning' : 'success',
+      },
+      movements: {
+        total: ingresosMes + salidasMes,
+        detail: `${ingresosMes} ingresos · ${salidasMes} salidas este mes`,
+        breakdown: { 'Tasa de rotación': `${tasaRotacion}%` },
+      },
+      vacationRisk: {
+        total: vacacionesRiesgo,
+        detail: 'colaboradores con más de 20 días acumulados',
+        status: vacacionesRiesgo > 0 ? 'Requiere seguimiento' : 'Bajo control',
+        tone: vacacionesRiesgo > 0 ? 'critical' : 'success',
+      },
+      chatUsage: {
+        total: `${pctChatbot}%`,
+        detail: `${consultasAyer} consultas ayer · latencia promedio ${latenciaPromedio} ms`,
+        breakdown: {
+          'Sin escalamiento': `${pctChatbot}%`,
+          Escaladas: `${Number((100 - pctChatbot).toFixed(1))}%`,
+        },
+      },
+      unresolvedCount: unresolved.length,
+    },
+  };
+}
+
 async function obtenerReporteDiario(fechaSolicitada = null) {
   const fechas = await db.ReporteDiario.findAll({
     attributes: ['fecha', 'generado_por', 'updated_at'],
@@ -437,29 +647,35 @@ async function obtenerReporteDiario(fechaSolicitada = null) {
     limit: 30,
   });
 
-  const historialFechas = fechas.map((f) => f.fecha);
+  let historialFechas = fechas.map((f) => f.fecha);
+  const hoyStr = formatoFecha(new Date());
+  let reporte = null;
 
   if (fechaSolicitada) {
-    const reporte = await db.ReporteDiario.findOne({ where: { fecha: fechaSolicitada } });
-    if (!reporte) {
-      throw new NotFoundError(`Reporte diario para la fecha ${fechaSolicitada}`);
+    reporte = await db.ReporteDiario.findOne({ where: { fecha: fechaSolicitada } });
+  }
+
+  if (!reporte && (!fechaSolicitada || fechaSolicitada === hoyStr)) {
+    reporte = await db.ReporteDiario.findOne({ where: { fecha: hoyStr } });
+  }
+
+  if (!reporte && historialFechas.length > 0 && fechaSolicitada && fechaSolicitada !== hoyStr) {
+    reporte = await db.ReporteDiario.findOne({ where: { fecha: historialFechas[0] } });
+  }
+
+  if (!reporte) {
+    const generado = await generarReporteDiario();
+    const reporteJson = generado.reporte;
+    if (!historialFechas.includes(reporteJson.fecha)) {
+      historialFechas = [reporteJson.fecha, ...historialFechas];
     }
-    return { reporte: reporte.toJSON(), historialFechas };
+    const dashboard = await construirDashboard(reporteJson, historialFechas);
+    return { reporte: reporteJson, historialFechas, dashboard };
   }
 
-  const hoyStr = formatoFecha(new Date());
-  const deHoy = await db.ReporteDiario.findOne({ where: { fecha: hoyStr } });
-  if (deHoy) {
-    return { reporte: deHoy.toJSON(), historialFechas };
-  }
-
-  const { reporte } = await generarReporteDiario();
-  return {
-    reporte,
-    historialFechas: historialFechas.includes(reporte.fecha)
-      ? historialFechas
-      : [reporte.fecha, ...historialFechas],
-  };
+  const reporteJson = reporte.toJSON();
+  const dashboard = await construirDashboard(reporteJson, historialFechas);
+  return { reporte: reporteJson, historialFechas, dashboard };
 }
 
 module.exports = {

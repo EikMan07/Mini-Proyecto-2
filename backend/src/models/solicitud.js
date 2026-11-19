@@ -48,6 +48,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 'pendiente',
       },
+      motivo_rechazo: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
       aprobador_id: {
         type: DataTypes.INTEGER,
         allowNull: true,

@@ -1,25 +1,222 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Accessibility,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  LayoutDashboard,
+  LogOut,
+  MessageCircle,
+  Moon,
+  Palette,
+  Sun,
+  Users,
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import { dashboardItemVariants, dashboardVariants, spring } from '../../lib/motion';
+import BrandLogo from '../BrandLogo/BrandLogo';
 
 export default function AppShell({ children, eyebrow, title, subtitle, actions }) {
   const { user, signOut } = useAuth();
+  const { isDark, toggleTheme, accent, setAccent, accentOptions } = useTheme();
+  const [isCollapsed, setIsCollapsed] = useState(
+    () => localStorage.getItem('kendall-sidebar') === 'collapsed'
+  );
+  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
   const navigate = useNavigate();
   const isHr = user?.role === 'rrhh';
-  const handleSignOut = () => { signOut(); navigate('/login'); };
-  return <div className="app-shell">
-    <aside className="side-rail">
-      <div className="brand-lockup"><span className="brand-mark">K</span><span><strong>Kendall</strong><small>People operations</small></span></div>
-      <nav className="main-nav" aria-label="Navegación principal">
-        <NavLink to={isHr ? '/rrhh/dashboard' : '/portal'} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>◒</span>{isHr ? 'Resumen diario' : 'Mi espacio'}</NavLink>
-        <span className="nav-label">Atajos</span>
-        <a className="nav-link muted" href="#chat"><span>↗</span>Asistente de políticas</a>
-        <a className="nav-link muted" href="#requests"><span>◇</span>Solicitudes</a>
-      </nav>
-      <div className="rail-footer"><div className="status-dot" /> Sistemas operativos <button className="text-button" onClick={handleSignOut}>Cerrar sesión</button></div>
-    </aside>
-    <main className="main-content">
-      <header className="page-header"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-subtitle">{subtitle}</p></div><div className="header-actions">{actions}<div className="user-chip"><span className="avatar">{user?.name?.split(' ').map((word) => word[0]).join('').slice(0, 2)}</span><span><strong>{user?.name}</strong><small>{isHr ? 'RRHH · Administradora' : user?.department}</small></span></div></div></header>
-      {children}
-    </main>
-  </div>;
+
+  const handleSignOut = () => {
+    signOut();
+    navigate('/login', { replace: true });
+  };
+
+  const toggleSidebar = () =>
+    setIsCollapsed((current) => {
+      const next = !current;
+      localStorage.setItem('kendall-sidebar', next ? 'collapsed' : 'open');
+      return next;
+    });
+
+  return (
+    <div className={`app-shell ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <motion.aside
+        layout
+        className="side-rail"
+        initial={{ x: -24, opacity: 0 }}
+        animate={{ x: 0, opacity: 1, width: isCollapsed ? 84 : 232 }}
+        transition={spring}
+      >
+        <motion.div layout className="brand-lockup">
+          <BrandLogo size={36} showText={!isCollapsed} compact={isCollapsed} theme="dark" />
+          <motion.button
+            className="rail-toggle"
+            onClick={toggleSidebar}
+            aria-label={isCollapsed ? 'Expandir navegación' : 'Colapsar navegación'}
+            whileTap={{ scale: 0.88 }}
+          >
+            {isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+          </motion.button>
+        </motion.div>
+
+        <motion.nav
+          className="main-nav"
+          aria-label="Navegación principal"
+          variants={dashboardVariants}
+          initial="initial"
+          animate="animate"
+        >
+          <motion.div variants={dashboardItemVariants}>
+            <NavLink
+              title={isCollapsed ? (isHr ? 'Resumen diario' : 'Mi espacio') : undefined}
+              to={isHr ? '/rrhh/dashboard' : '/portal'}
+              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+            >
+              <LayoutDashboard size={17} />
+              {!isCollapsed && (isHr ? 'Resumen diario' : 'Mi espacio')}
+            </NavLink>
+          </motion.div>
+
+          {isHr && (
+            <motion.div variants={dashboardItemVariants}>
+              <NavLink
+                title={isCollapsed ? 'Trabajadores' : undefined}
+                to="/rrhh/trabajadores"
+                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              >
+                <Users size={17} />
+                {!isCollapsed && 'Trabajadores'}
+              </NavLink>
+            </motion.div>
+          )}
+
+          {!isCollapsed && (
+            <motion.span className="nav-label" variants={dashboardItemVariants}>
+              Atajos
+            </motion.span>
+          )}
+
+          {!isHr && (
+            <motion.div variants={dashboardItemVariants}>
+              <a
+                title={isCollapsed ? 'Asistente de políticas' : undefined}
+                className="nav-link muted"
+                href="#chat"
+              >
+                <MessageCircle size={17} />
+                {!isCollapsed && 'Asistente de políticas'}
+              </a>
+            </motion.div>
+          )}
+
+          <motion.div variants={dashboardItemVariants}>
+            <a
+              title={isCollapsed ? 'Solicitudes' : undefined}
+              className="nav-link muted"
+              href={isHr ? '/rrhh/dashboard#requests' : '#requests'}
+            >
+              <ClipboardList size={17} />
+              {!isCollapsed && (isHr ? 'Solicitudes pendientes' : 'Solicitudes')}
+            </a>
+          </motion.div>
+        </motion.nav>
+
+        <div className="rail-footer">
+          <div className="accessibility-wrap">
+            <motion.button
+              className="accessibility-button"
+              onClick={() => setIsAccessibilityOpen((current) => !current)}
+              aria-expanded={isAccessibilityOpen}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Accessibility size={15} />
+              {!isCollapsed && 'Accesibilidad'}
+            </motion.button>
+            <AnimatePresence>
+              {isAccessibilityOpen && (
+                <motion.div
+                  className="accessibility-panel"
+                  initial={{ opacity: 0, height: 0, y: 5 }}
+                  animate={{ opacity: 1, height: 'auto', y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: 5 }}
+                >
+                  <div className="status-line">
+                    <span className="status-dot" />
+                    Sistemas operativos
+                  </div>
+                  <div className="accent-picker">
+                    <span className="accent-label">
+                      <Palette size={14} /> Color de acento
+                    </span>
+                    <div className="accent-options">
+                      {Object.entries(accentOptions).map(([key, option]) => (
+                        <button
+                          key={key}
+                          type="button"
+                          className={`accent-swatch ${accent === key ? 'selected' : ''}`}
+                          style={{ '--swatch': option.light }}
+                          onClick={() => setAccent(key)}
+                          aria-label={`Elegir color ${option.label}`}
+                          aria-pressed={accent === key}
+                          title={option.label}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <motion.button
+                    className="theme-toggle"
+                    onClick={toggleTheme}
+                    aria-label="Cambiar tema"
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                    {isDark ? 'Modo claro' : 'Modo oscuro'}
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <motion.button className="text-button" onClick={handleSignOut} whileTap={{ x: 2 }}>
+            <LogOut size={15} />
+            {!isCollapsed && 'Cerrar sesión'}
+          </motion.button>
+        </div>
+      </motion.aside>
+
+      <motion.main
+        className="main-content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.08 }}
+      >
+        <header className="page-header">
+          <div>
+            <p className="eyebrow">{eyebrow}</p>
+            <h1>{title}</h1>
+            {subtitle && <p className="page-subtitle">{subtitle}</p>}
+          </div>
+          <div className="header-actions">
+            {actions}
+            <div className="user-chip">
+              <span className="avatar">
+                {user?.name
+                  ?.split(' ')
+                  .map((word) => word[0])
+                  .join('')
+                  .slice(0, 2)}
+              </span>
+              <span>
+                <strong>{user?.name}</strong>
+                <small>{isHr ? 'RRHH · Administradora' : user?.department}</small>
+              </span>
+            </div>
+          </div>
+        </header>
+        {children}
+      </motion.main>
+    </div>
+  );
 }

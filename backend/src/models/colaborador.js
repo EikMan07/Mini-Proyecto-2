@@ -48,6 +48,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'colaborador_id',
         as: 'consultasChat',
       });
+      Colaborador.hasMany(models.ComprobanteMedico, {
+        foreignKey: 'colaborador_id',
+        as: 'comprobantesMedicos',
+      });
+      Colaborador.hasMany(models.ComprobanteMedico, {
+        foreignKey: 'revisado_por',
+        as: 'comprobantesRevisados',
+      });
     }
 
     async verificarPassword(plano) {
@@ -76,6 +84,10 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: { msg: 'El nombre es obligatorio' },
           len: { args: [2, 120], msg: 'El nombre debe tener entre 2 y 120 caracteres' },
         },
+      },
+      apellidos: {
+        type: DataTypes.STRING(120),
+        allowNull: true,
       },
       email: {
         type: DataTypes.STRING(150),
@@ -124,6 +136,39 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isIn: [['activo', 'inactivo', 'vacaciones', 'incapacidad']],
         },
+      },
+      cedula: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+        unique: true,
+      },
+      telefono: {
+        type: DataTypes.STRING(30),
+        allowNull: true,
+      },
+      fecha_nacimiento: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+      },
+      provincia: {
+        type: DataTypes.STRING(80),
+        allowNull: true,
+      },
+      canton: {
+        type: DataTypes.STRING(80),
+        allowNull: true,
+      },
+      distrito: {
+        type: DataTypes.STRING(80),
+        allowNull: true,
+      },
+      direccion_exacta: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      terminos_aceptados_en: {
+        type: DataTypes.DATE,
+        allowNull: true,
       },
     },
     {

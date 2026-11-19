@@ -4,7 +4,8 @@ const ingestAgent = require('../agents/ingestAgent');
 
 exports.syncDrive = async (req, res, next) => {
   try {
-    const resultado = await ingestAgent.sincronizarDesdeDrive();
+    const forzarCompleto = Boolean(req.body?.forzarCompleto);
+    const resultado = await ingestAgent.sincronizarDesdeDrive({ forzarCompleto });
     return res.status(200).json({
       mensaje: 'Sincronizacion con Google Drive completada',
       resultado,

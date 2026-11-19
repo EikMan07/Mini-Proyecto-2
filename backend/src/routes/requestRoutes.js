@@ -24,5 +24,14 @@ router.patch(
   validar(resolverSolicitudSchema),
   ctrl.resolver
 );
+router.patch(
+  '/:id/status',
+  authMiddleware,
+  soloRol('rrhh'),
+  verificarCsrf,
+  validar(idParamSchema, 'params'),
+  validar(resolverSolicitudSchema),
+  ctrl.resolver
+);
 
 module.exports = router;

@@ -37,6 +37,8 @@ exports.resolver = async (req, res, next) => {
     );
     return res.status(200).json({
       mensaje: `Solicitud ${solicitud.estado} exitosamente`,
+      motivo_rechazo: solicitud.motivo_rechazo ?? null,
+      rejectionReason: solicitud.rejectionReason ?? null,
       solicitud,
     });
   } catch (error) {

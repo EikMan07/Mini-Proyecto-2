@@ -10,5 +10,6 @@ const { checkInSchema } = require('../schemas/portalSchemas');
 
 router.get('/employee/me/summary', authMiddleware, ctrl.resumen);
 router.post('/attendance/check-in', authMiddleware, verificarCsrf, validar(checkInSchema), ctrl.checkIn);
+router.post('/attendance/check-out', authMiddleware, verificarCsrf, ctrl.checkOut);
 
 module.exports = router;

@@ -6,6 +6,7 @@ const { google } = require('googleapis');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 const XLSX = require('xlsx');
+const { Op } = require('sequelize');
 const { DriveSyncState } = require('../models');
 const { AppError } = require('../utils/errors');
 
@@ -114,8 +115,12 @@ async function extraerTextoDeBuffer(buffer, mimeType, nombreArchivo = '') {
 /**
  * Obtiene los cambios incrementales en Google Drive usando `changes.list` y `page_token` persistente.
  */
-async function obtenerCambiosDrive() {
+async function obtenerCambiosDrive({ forzarCompleto = false } = {}) {
   const { drive, folderId } = crearClienteDrive();
+
+  const estadosPreviosDistintos = await DriveSyncState.destroy({
+    where: { folder_id: { [Op.ne]: folderId } },
+  });
 
   const [state] = await DriveSyncState.findOrCreate({
     where: { folder_id: folderId },
@@ -127,9 +132,14 @@ async function obtenerCambiosDrive() {
     },
   });
 
-  const archivosActivos = { ...(state.archivos_activos || {}) };
+  const requiereReinicio = Boolean(forzarCompleto || estadosPreviosDistintos > 0);
+  if (requiereReinicio && state.page_token) {
+    await state.update({ page_token: null, archivos_activos: {} });
+  }
 
-  // Primera sincronización: listar archivos actuales de la carpeta y capturar startPageToken
+  const archivosActivos = requiereReinicio ? {} : { ...(state.archivos_activos || {}) };
+
+  // Primera sincronización o reseteo completo: listar archivos actuales de la carpeta y capturar startPageToken
   if (!state.page_token) {
     const agregadosOActualizados = [];
     let nextPageToken = null;
@@ -160,6 +170,8 @@ async function obtenerCambiosDrive() {
 
     return {
       drive,
+      folderId,
+      sincronizacionCompleta: true,
       state,
       archivosActivos,
       agregadosOActualizados,
@@ -221,6 +233,8 @@ async function obtenerCambiosDrive() {
 
   return {
     drive,
+    folderId,
+    sincronizacionCompleta: false,
     state,
     archivosActivos,
     agregadosOActualizados: Array.from(mapaActualizados.values()),

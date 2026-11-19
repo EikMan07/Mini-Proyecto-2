@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(20),
         allowNull: true,
       },
+      hora_salida: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+      },
       modalidad: {
         type: DataTypes.STRING(30),
         allowNull: false,

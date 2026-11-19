@@ -1,12 +1,43 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const db = require('../models');
 const { ConflictError, NotFoundError, ValidationError } = require('../utils/errors');
+const { ETIQUETAS_ESTADO, ETIQUETAS_TIPO } = require('./employeeService');
+
+function obtenerHoyCostaRica() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Costa_Rica' }).format(new Date());
+}
 
 function calcularDiasInclusivos(fechaInicioStr, fechaFinStr) {
   const ini = new Date(`${fechaInicioStr}T00:00:00Z`);
   const fin = new Date(`${fechaFinStr}T00:00:00Z`);
   return Math.floor((fin.getTime() - ini.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+}
+
+function formatearFechaCorta(fechaStr) {
+  if (!fechaStr) return '';
+  const d = new Date(`${String(fechaStr).slice(0, 10)}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return String(fechaStr);
+  return d.toLocaleDateString('es-CR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function enriquecerSolicitud(json) {
+  return {
+    ...json,
+    type: ETIQUETAS_TIPO[json.tipo] || json.tipo,
+    startDate: json.fecha_inicio,
+    endDate: json.fecha_fin,
+    dates: `${formatearFechaCorta(json.fecha_inicio)} → ${formatearFechaCorta(json.fecha_fin)}`,
+    days: json.dias_solicitados,
+    reason: json.motivo || '',
+    motivo_rechazo: json.motivo_rechazo || null,
+    rejectionReason: json.motivo_rechazo || null,
+    status: ETIQUETAS_ESTADO[json.estado] || json.estado,
+    createdAt: 'Ahora',
+    person: json.colaborador?.nombre,
+    department: json.colaborador?.departamento?.nombre,
+  };
 }
 
 async function listarSolicitudes(usuarioAutenticado, { estado } = {}) {
@@ -39,10 +70,30 @@ async function listarSolicitudes(usuarioAutenticado, { estado } = {}) {
     limit: 100,
   });
 
-  return filas.map((f) => f.toJSON());
+  return filas.map((f) => enriquecerSolicitud(f.toJSON()));
 }
 
 async function crearSolicitud(colaboradorId, datos) {
+  const hoyCR = obtenerHoyCostaRica();
+  if (datos.fecha_inicio < hoyCR || datos.fecha_fin < hoyCR) {
+    throw new ValidationError('No puedes escoger fechas que ya hayan pasado.');
+  }
+
+  const traslape = await db.Solicitud.findOne({
+    where: {
+      colaborador_id: colaboradorId,
+      estado: { [Op.in]: ['pendiente', 'aprobada'] },
+      fecha_inicio: { [Op.lte]: datos.fecha_fin },
+      fecha_fin: { [Op.gte]: datos.fecha_inicio },
+    },
+  });
+
+  if (traslape) {
+    throw new ConflictError(
+      `Ya tienes una solicitud ${traslape.estado} que ocupa fechas del ${traslape.fecha_inicio} al ${traslape.fecha_fin}.`
+    );
+  }
+
   const diasSolicitados = calcularDiasInclusivos(datos.fecha_inicio, datos.fecha_fin);
 
   if (datos.tipo === 'vacaciones') {
@@ -68,7 +119,7 @@ async function crearSolicitud(colaboradorId, datos) {
     creada_en: new Date(),
   });
 
-  return solicitud.toJSON();
+  return enriquecerSolicitud(solicitud.toJSON());
 }
 
 async function resolverSolicitud(solicitudId, aprobadorId, datos) {
@@ -80,6 +131,12 @@ async function resolverSolicitud(solicitudId, aprobadorId, datos) {
 
     if (solicitud.estado !== 'pendiente') {
       throw new ConflictError(`La solicitud ya fue resuelta previamente con estado '${solicitud.estado}'.`);
+    }
+
+    const motivoRechazo =
+      datos.estado === 'rechazada' ? String(datos.motivo_rechazo || '').trim() : null;
+    if (datos.estado === 'rechazada' && (!motivoRechazo || motivoRechazo.length < 5)) {
+      throw new ValidationError('Debes indicar el motivo del rechazo de la solicitud.');
     }
 
     if (datos.estado === 'aprobada' && solicitud.tipo === 'vacaciones') {
@@ -105,11 +162,12 @@ async function resolverSolicitud(solicitudId, aprobadorId, datos) {
       {
         estado: datos.estado,
         aprobador_id: aprobadorId,
+        motivo_rechazo: datos.estado === 'aprobada' ? null : motivoRechazo,
       },
       { transaction }
     );
 
-    return solicitud.toJSON();
+    return enriquecerSolicitud(solicitud.toJSON());
   });
 }
 

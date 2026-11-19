@@ -45,9 +45,9 @@ function deduplicarCitas(fragmentos) {
  * Nunca consulta tablas operativas de colaboradores ni busca en internet.
  */
 async function responderPolitica(pregunta) {
-  const threshold = Number(process.env.RAG_SIMILARITY_THRESHOLD) || 0.65;
+  const threshold = Number(process.env.RAG_SIMILARITY_THRESHOLD) || 0.52;
   const embeddingConsulta = await generarEmbedding(pregunta);
-  const fragmentos = await buscarFragmentosSimilares(embeddingConsulta, 3);
+  const fragmentos = await buscarFragmentosSimilares(embeddingConsulta, 4, pregunta);
   const similitudMaxima = fragmentos.length > 0 ? Number(fragmentos[0].similitud) : 0;
 
   if (fragmentos.length === 0 || similitudMaxima < threshold) {
@@ -73,13 +73,13 @@ async function responderPolitica(pregunta) {
     .join('\n\n');
 
   const systemInstruction = cargarPromptPoliticas();
-  const userPrompt = `<documentos>\n${contextoXml}\n</documentos>\n\nPregunta del colaborador: ${pregunta}\n\nResponde de forma clara citando el documento, seccion y version correspondiente. Si la respuesta exacta no esta respaldada por <documentos>, indica explicitamente que no se encuentra en la documentacion oficial y sugiere escalar a RRHH.`;
+  const userPrompt = `<documentos>\n${contextoXml}\n</documentos>\n\nPregunta del colaborador: ${pregunta}\n\nResponde de forma directa y concisa en español (máximo 2 a 4 oraciones), resaltando con **negrita** los datos clave, cantidades y plazos legales presentes en <documentos> (por ejemplo **48 horas** o cantidad de días), e indicando el documento y sección de respaldo. No escribas rutas técnicas como local:// ni razonamiento interno. Si la respuesta exacta no esta respaldada por <documentos>, inicia con SIN_COBERTURA_OFICIAL: y sugiere escalar a RRHH.`;
 
   const answer = await generarConGemini({
     systemInstruction,
     userPrompt,
-    temperature: 0.1,
-    maxOutputTokens: 280,
+    temperature: 0.2,
+    maxOutputTokens: 320,
   });
 
   const respuestaIndicaNoEncontrado = /^SIN_COBERTURA_OFICIAL\b/i.test(answer.trim());

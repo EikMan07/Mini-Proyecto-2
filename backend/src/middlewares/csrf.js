@@ -13,6 +13,18 @@ function esModoApiSinCookie(req) {
   return auth.startsWith('Bearer ');
 }
 
+function obtenerOrigenesPermitidos() {
+  return new Set(
+    [
+      process.env.FRONTEND_URL,
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174',
+    ].filter(Boolean)
+  );
+}
+
 function verificarOrigen(req, res, next) {
   if (!METODOS_MUTABLES.has(req.method)) {
     return next();
@@ -22,8 +34,8 @@ function verificarOrigen(req, res, next) {
     return next();
   }
 
-  const frontendUrl = process.env.FRONTEND_URL;
-  if (!frontendUrl) {
+  const origenesPermitidos = obtenerOrigenesPermitidos();
+  if (origenesPermitidos.size === 0) {
     return next();
   }
 
@@ -31,7 +43,7 @@ function verificarOrigen(req, res, next) {
   const referer = req.headers.referer;
 
   if (origen) {
-    if (origen !== frontendUrl) {
+    if (!origenesPermitidos.has(origen)) {
       return res.status(403).json({
         error: 'Petición bloqueada por seguridad de origen.',
         codigo: 'ORIGEN_NO_PERMITIDO',
@@ -43,8 +55,7 @@ function verificarOrigen(req, res, next) {
   if (referer) {
     try {
       const refererUrl = new URL(referer);
-      const expectedUrl = new URL(frontendUrl);
-      if (refererUrl.origin !== expectedUrl.origin) {
+      if (!origenesPermitidos.has(refererUrl.origin)) {
         return res.status(403).json({
           error: 'Petición bloqueada por seguridad de origen (referer).',
           codigo: 'ORIGEN_NO_PERMITIDO',

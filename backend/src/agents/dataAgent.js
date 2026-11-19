@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { Op } = require('sequelize');
 const db = require('../models');
-const { generarConGemini } = require('../services/llmService');
+const { generarConGemini, contieneMetaTextoIngles } = require('../services/llmService');
 const { ForbiddenError, NotFoundError } = require('../utils/errors');
 
 const PROMPT_PATH = path.resolve(__dirname, '../prompts/dataAgent.md');
@@ -20,8 +20,8 @@ function cargarPromptDatos() {
 function ajustarDiaHabil(fecha) {
   const d = new Date(fecha.getTime());
   const dia = d.getUTCDay();
-  if (dia === 6) d.setUTCDate(d.getUTCDate() - 1); // Sábado -> viernes
-  else if (dia === 0) d.setUTCDate(d.getUTCDate() - 2); // Domingo -> viernes
+  if (dia === 6) d.setUTCDate(d.getUTCDate() - 1);
+  else if (dia === 0) d.setUTCDate(d.getUTCDate() - 2);
   return d;
 }
 
@@ -60,7 +60,7 @@ async function obtenerDatosPersonales(colaboradorId) {
     db.Solicitud.findAll({
       where: { colaborador_id: colaboradorId },
       order: [['creada_en', 'DESC']],
-      limit: 10,
+      limit: 50,
     }),
     db.Incapacidad.findAll({
       where: { colaborador_id: colaboradorId },
@@ -106,6 +106,7 @@ async function obtenerDatosPersonales(colaboradorId) {
       dias_solicitados: s.dias_solicitados,
       estado: s.estado,
       motivo: s.motivo,
+      motivo_rechazo: s.motivo_rechazo || null,
       creada_en: s.creada_en,
     })),
     incapacidades: incapacidades.map((inc) => ({
@@ -123,6 +124,7 @@ async function obtenerDatosPersonales(colaboradorId) {
       estado: a.estado,
       modalidad: a.modalidad,
       hora_entrada: a.hora_entrada,
+      hora_salida: a.hora_salida,
       observacion: a.observacion,
     })),
     nomina_y_calendario: {
@@ -206,6 +208,137 @@ async function obtenerDatosAgregadosRRHH() {
   };
 }
 
+function normalizarPregunta(pregunta = '') {
+  return String(pregunta || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+function seleccionarBloquePorPregunta(pregunta, datosConsultados, esAgregado) {
+  const q = normalizarPregunta(pregunta);
+
+  if (esAgregado) {
+    if (/solicitud|permiso/.test(q)) {
+      return {
+        fecha_corte: datosConsultados.fecha_corte,
+        solicitudes_pendientes_totales: datosConsultados.solicitudes_pendientes_totales,
+        solicitudes_pendientes_mas_3_dias: datosConsultados.solicitudes_pendientes_mas_3_dias,
+      };
+    }
+    if (/incapacidad/.test(q)) {
+      return {
+        fecha_corte: datosConsultados.fecha_corte,
+        colaboradores_incapacitados_hoy: datosConsultados.colaboradores_incapacitados_hoy,
+        incapacidades_activas: datosConsultados.incapacidades_activas,
+      };
+    }
+    if (/vacacion/.test(q)) {
+      return {
+        fecha_corte: datosConsultados.fecha_corte,
+        colaboradores_en_vacaciones_hoy: datosConsultados.colaboradores_en_vacaciones_hoy,
+        colaboradores_con_mas_20_dias_vacaciones: datosConsultados.colaboradores_con_mas_20_dias_vacaciones,
+      };
+    }
+    if (/asistencia|marca/.test(q)) {
+      return {
+        fecha_corte: datosConsultados.fecha_corte,
+        resumen_asistencia_hoy: datosConsultados.resumen_asistencia_hoy,
+      };
+    }
+    return {
+      fecha_corte: datosConsultados.fecha_corte,
+      total_colaboradores_activos: datosConsultados.total_colaboradores_activos,
+    };
+  }
+
+  const nombre = datosConsultados.colaborador?.nombre || 'Colaborador';
+
+  if (/vacacion|saldo|dias disponibles|libres/.test(q)) {
+    return {
+      nombre,
+      saldo_vacaciones: datosConsultados.saldo_vacaciones_2026,
+    };
+  }
+  if (/solicitud|permiso|licencia|estudio/.test(q)) {
+    return {
+      nombre,
+      solicitudes: (datosConsultados.solicitudes_recientes || []).slice(0, 4),
+    };
+  }
+  if (/pago|quincena|nomina|salario|sueldo|evaluacion|desempeno/.test(q)) {
+    return {
+      nombre,
+      proximo_pago: datosConsultados.nomina_y_calendario,
+    };
+  }
+  if (/incapacidad|ccss|ins|clinica/.test(q)) {
+    return {
+      nombre,
+      incapacidades: (datosConsultados.incapacidades || []).slice(0, 4),
+    };
+  }
+  if (/asistencia|marca|entrada|salida|jornada/.test(q)) {
+    return {
+      nombre,
+      asistencias: (datosConsultados.asistencias_recientes || []).slice(0, 5),
+    };
+  }
+
+  return {
+    nombre,
+    puesto: datosConsultados.colaborador?.puesto,
+    departamento: datosConsultados.colaborador?.departamento,
+    saldo_vacaciones: datosConsultados.saldo_vacaciones_2026,
+  };
+}
+
+function construirFallbackDatos(pregunta, datosConsultados, esAgregado) {
+  const q = normalizarPregunta(pregunta);
+
+  if (esAgregado) {
+    if (/solicitud|permiso/.test(q)) {
+      return `Actualmente hay **${datosConsultados.solicitudes_pendientes_totales} solicitudes pendientes**, de las cuales **${datosConsultados.solicitudes_pendientes_mas_3_dias}** superan los 3 días de espera.`;
+    }
+    if (/incapacidad/.test(q)) {
+      return `Al corte de hoy se registran **${datosConsultados.incapacidades_activas} incapacidades activas** en la organización.`;
+    }
+    return `La planilla activa cuenta actualmente con **${datosConsultados.total_colaboradores_activos} colaboradores**.`;
+  }
+
+  const primerNombre = String(datosConsultados.colaborador?.nombre || 'Colaborador').split(/\s+/)[0];
+
+  if (/vacacion|saldo|dias disponibles|libres/.test(q)) {
+    const disp = datosConsultados.saldo_vacaciones_2026?.dias_disponibles;
+    const dias = disp !== undefined && disp !== null ? Number(disp) : 0;
+    return `${primerNombre}, actualmente tienes **${dias} días** de vacaciones disponibles para el periodo 2026.`;
+  }
+
+  if (/pago|quincena|nomina/.test(q)) {
+    const prox = datosConsultados.nomina_y_calendario?.proximo_pago_quincenal || 'el próximo día hábil quincenal';
+    return `${primerNombre}, tu próximo pago quincenal está programado para el **${prox}**.`;
+  }
+
+  if (/solicitud|permiso/.test(q)) {
+    const ultima = datosConsultados.solicitudes_recientes?.[0];
+    if (!ultima) {
+      return `${primerNombre}, no tienes solicitudes recientes registradas en el sistema.`;
+    }
+    const motivoRechazoTexto =
+      ultima.estado === 'rechazada' && ultima.motivo_rechazo
+        ? ` Motivo indicado por RRHH: **${ultima.motivo_rechazo}**.`
+        : '';
+    return `${primerNombre}, tu solicitud más reciente corresponde a **${ultima.fecha_inicio}** al **${ultima.fecha_fin}** y se encuentra **${ultima.estado}**.${motivoRechazoTexto}`;
+  }
+
+  if (/incapacidad/.test(q)) {
+    const totalInc = (datosConsultados.incapacidades || []).length;
+    return `${primerNombre}, tienes **${totalInc} incapacidades** registradas en tu historial reciente.`;
+  }
+
+  return `${primerNombre}, tu ficha laboral está activa en el departamento de **${datosConsultados.colaborador?.departamento || 'TicoSoft'}**.`;
+}
+
 /**
  * Agente 3: Especialista en Datos Operativos RRHH.
  * Filtra estrictamente por `colaborador_id` del usuario autenticado.
@@ -220,25 +353,24 @@ async function responderDatos(pregunta, usuarioAutenticado, { esAgregado = false
     ? await obtenerDatosAgregadosRRHH()
     : await obtenerDatosPersonales(usuarioAutenticado.id);
 
-  const datosParaLLM = esAgregado
-    ? datosConsultados
-    : {
-        colaborador: datosConsultados.colaborador,
-        saldo_vacaciones_2026: datosConsultados.saldo_vacaciones_2026,
-        solicitudes_recientes: datosConsultados.solicitudes_recientes.slice(0, 4),
-        incapacidades: datosConsultados.incapacidades.slice(0, 4),
-        nomina_y_calendario: datosConsultados.nomina_y_calendario,
-      };
-
+  const datosParaLLM = seleccionarBloquePorPregunta(pregunta, datosConsultados, esAgregado);
   const systemInstruction = cargarPromptDatos();
-  const userPrompt = `<datos_verificados>\n${JSON.stringify(datosParaLLM)}\n</datos_verificados>\n\nPregunta del usuario: ${pregunta}\n\nResponde en 1 a 3 oraciones directas usando exclusivamente los datos anteriores.`;
+  const userPrompt = `<datos_verificados>\n${JSON.stringify(datosParaLLM)}\n</datos_verificados>\n\nPregunta del usuario: ${pregunta}\n\nResponde exclusivamente en español en 1 a 2 oraciones directas resaltando solo el dato clave con **negrita**, sin listas ni nombres técnicos de campos.`;
 
-  const answer = await generarConGemini({
-    systemInstruction,
-    userPrompt,
-    temperature: 0.1,
-    maxOutputTokens: 220,
-  });
+  let answer = '';
+  try {
+    answer = await generarConGemini({
+      systemInstruction,
+      userPrompt,
+      temperature: 0.2,
+      maxOutputTokens: 160,
+    });
+    if (!answer || contieneMetaTextoIngles(answer)) {
+      answer = construirFallbackDatos(pregunta, datosConsultados, esAgregado);
+    }
+  } catch {
+    answer = construirFallbackDatos(pregunta, datosConsultados, esAgregado);
+  }
 
   return {
     answer,

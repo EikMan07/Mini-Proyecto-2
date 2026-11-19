@@ -17,6 +17,8 @@ const chatRoutes = require('./routes/chatRoutes');
 const employeeRoutes = require('./routes/employeeRoutes');
 const requestRoutes = require('./routes/requestRoutes');
 const reportRoutes = require('./routes/reportRoutes');
+const documentRoutes = require('./routes/documentRoutes');
+const workerDirectoryRoutes = require('./routes/workerDirectoryRoutes');
 const errorHandler = require('./middlewares/errorHandler');
 const { NotFoundError } = require('./utils/errors');
 const db = require('./models');
@@ -27,14 +29,31 @@ validarConfiguracionCookies();
 const app = express();
 
 // 2. Seguridad HTTP y compresión
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
 app.use(compression());
 
-// 3. CORS con origen explícito y credenciales activas
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+// 3. CORS con lista blanca explícita y credenciales activas (sin wildcard '*')
+const origenesPermitidos = new Set(
+  [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+  ].filter(Boolean)
+);
 app.use(
   cors({
-    origin: frontendUrl,
+    origin(origin, callback) {
+      if (!origin || origenesPermitidos.has(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Origen no permitido por política CORS.'));
+    },
     credentials: true,
   })
 );
@@ -79,6 +98,7 @@ app.get('/api/health', async (req, res, next) => {
       consultas_chat,
       reportes_diarios,
       tickets_escalamiento,
+      comprobantes_medicos,
     ] = await Promise.all([
       db.Departamento.count(),
       db.Colaborador.count(),
@@ -91,6 +111,7 @@ app.get('/api/health', async (req, res, next) => {
       db.ConsultaChat.count(),
       db.ReporteDiario.count(),
       db.TicketEscalamiento.count(),
+      db.ComprobanteMedico.count(),
     ]);
 
     return res.status(200).json({
@@ -109,6 +130,7 @@ app.get('/api/health', async (req, res, next) => {
         consultas_chat,
         reportes_diarios,
         tickets_escalamiento,
+        comprobantes_medicos,
       },
       colaboradores,
     });
@@ -124,6 +146,8 @@ app.use('/api/ingest', ingestRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/hr/workers', workerDirectoryRoutes);
 app.use('/api', employeeRoutes);
 
 // 10. Manejador 404 para rutas inexistentes

@@ -10,6 +10,7 @@ const { registroSchema, loginSchema } = require('../schemas/authSchema');
 
 // Rutas públicas
 router.post('/registro', validar(registroSchema), ctrl.registro);
+router.post('/register', validar(registroSchema), ctrl.registro);
 router.post('/login', validar(loginSchema), ctrl.login);
 router.get('/usuarios-demo', ctrl.usuariosDemo);
 

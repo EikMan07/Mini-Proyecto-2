@@ -4,38 +4,29 @@
 Plataforma de Recursos Humanos para **TicoSoft S.A.** (250 colaboradores en Costa Rica) con arquitectura multiagente basada en **Node.js, Express, Sequelize v6, PostgreSQL, Google Drive API y Gemini (`@google/generative-ai`)**.
 
 ## Estructura Actual
-- `backend/`: API REST, migraciones 3FN, seeder de 250 colaboradores, ingesta documental Drive/local, 5 agentes (`orchestrator`, `policyAgent`, `dataAgent`, `analystAgent`, `validatorAgent`), crones diarios (06:45 y 07:00) y evaluador de 45 preguntas. Consulta [backend/README.md](./backend/README.md) para la guía técnica detallada.
-- `documentos_drive/eiker/`: 5 políticas laborales de Costa Rica (PDF, DOCX, XLSX, MD) e `Informe_Fase1_Normativa_CR_Eiker.md`.
+- `backend/`: API REST, migraciones 3FN (`20261117000001` a `20261119000007`), seeder enriquecido (260 colaboradores y asistencias CR), ingesta documental Drive/local (`ingestAgent.js`), 5 agentes (`orchestrator`, `policyAgent`, `dataAgent`, `analystAgent`, `validatorAgent`), gestión de justificantes (`/api/documents`), directorio de trabajadores (`/api/hr/workers`), crones diarios (06:45 y 07:00) y evaluador de 45 preguntas. Consulta [backend/README.md](./backend/README.md) para la guía técnica detallada.
+- `documentos_drive/eiker/` y `documentos_drive/nuevas_politicas/`: 11+ documentos normativos laborales de Costa Rica (permisos/duelo, guía de justificación de ausencias en 48 h, jornada/teletrabajo, beneficios, evaluación, acoso, vacaciones/feriados, salarios/aguinaldo, incapacidades, onboarding y privacidad) junto con `Informe_Fase1_Normativa_CR_Eiker.md`.
 - `.agents/skills/`: Skills de arquitectura, auditoría, bitácora y Git (`backend-postgres-guardian`, `bitacora-agente`, `design-taste-frontend`, `frontend-desing`, `frontend-react-structure`, `github-commits`, `repo-docs-updater`).
 - `docs/`: Planificación del frontend (`Plan_Frontend_Kendall_MiniProyecto2.pdf`).
+- `frontend/`: Portal React con Vite (`TicoSoft S.A. · Portal de Talento Humano`) para colaboradores y RRHH.
 
 ## Arranque Rápido del Backend
 ```bash
 cd backend
 npm install
-cp .env.example .env   # Configurar DB_PASSWORD y GEMINI_API_KEY
+cp .env.example .env   # Configurar DB_PASSWORD, GEMINI_API_KEY y GOOGLE_DRIVE_FOLDER_ID
 npx sequelize-cli db:create
 npx sequelize-cli db:migrate
 npx sequelize-cli db:seed:all
 npm run dev
 ```
-- `.agents/skills/`: Skills configuradas para el asistente:
-  - `backend-postgres-guardian`
-  - `bitacora-agente`
-  - `design-taste-frontend`
-  - `frontend-desing`
-  - `frontend-react-structure`
-  - `github-commits`
-  - `repo-docs-updater`
-- `docs/`: Documentación del proyecto (`Plan_Frontend_Kendall_MiniProyecto2.pdf`).
-- `frontend/`: Portal React con Vite para colaboradores y RRHH.
 
-## Frontend Kendall
+## Portal Frontend (TicoSoft S.A. · Talento Humano)
 
-El frontend implementa el portal de políticas de RRHH con dos experiencias protegidas por rol:
+El frontend implementa la experiencia unificada con identidad corporativa SVG (`BrandLogo.jsx` y `favicon.svg`), modo claro/oscuro y dos roles protegidos:
 
-- **Colaborador:** chat RAG con citas, alertas de privacidad, escalamiento, asistencia, comprobante médico, saldo y solicitudes.
-- **RRHH:** dashboard diario con KPIs, tendencia de 30 días, top de temas, solicitudes vencidas, resumen ejecutivo e historial.
+- **Colaborador (`/portal`):** chat RAG con citas y renderizado Markdown limpio, control de entrada/salida, apartado **Justificar ausencia** (`POST /api/documents`), calendario de feriados CR, saldo de vacaciones y solicitudes con motivo de rechazo visible.
+- **RRHH (`/rrhh/dashboard` y `/rrhh/trabajadores`):** dashboard diario con KPIs, gráficas, aprobación/rechazo de solicitudes con motivo obligatorio, revisión de comprobantes (`DocumentsInbox`), directorio paginado con expedientes completos y monitor filtrable de **Control de jornada**.
 
 ### Instalación y ejecución
 
@@ -45,17 +36,17 @@ npm install
 npm run dev
 ```
 
-Para usar el backend real, copia `frontend/.env.example` a `frontend/.env` y configura `VITE_API_URL`. Sin esa variable, la app usa los mocks del contrato acordado con Eiker.
+Para conectarlo con Express, copia `frontend/.env.example` a `frontend/.env` y configura `VITE_API_URL=http://localhost:5000`.
 
 ### Verificaciones
 
 ```bash
 cd frontend
-npm run build
 npm test
+npm run build
 ```
 
-La estructura sigue `components → pages → routes → App → main`. Las llamadas HTTP viven en `src/services/api.js`, mientras que `src/mocks/apiMock.js` permite trabajar antes de que estén disponibles los endpoints de Express.
+La estructura sigue `components → pages → routes → App → main`, con todas las llamadas HTTP autenticadas por cookies `HttpOnly` y `X-CSRF-Token` en `src/services/api.js`.
 
 ## Historial de Cambios
 Consulta [CHANGELOG.md](./CHANGELOG.md) para el detalle de versiones y cambios recientes.

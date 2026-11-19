@@ -13,13 +13,27 @@ exports.resumen = async (req, res, next) => {
 
 exports.checkIn = async (req, res, next) => {
   try {
-    const { asistencia, creada } = await employeeService.registrarAsistenciaHoy(
+    const { asistencia, attendanceToday, creada } = await employeeService.registrarAsistenciaHoy(
       req.usuario.id,
       req.body
     );
     return res.status(creada ? 201 : 200).json({
       mensaje: creada ? 'Marca de asistencia registrada' : 'Marca de asistencia actualizada',
       asistencia,
+      ...attendanceToday,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.checkOut = async (req, res, next) => {
+  try {
+    const { asistencia, attendanceToday } = await employeeService.registrarSalidaHoy(req.usuario.id);
+    return res.status(200).json({
+      mensaje: 'Marca de salida registrada',
+      asistencia,
+      ...attendanceToday,
     });
   } catch (error) {
     return next(error);

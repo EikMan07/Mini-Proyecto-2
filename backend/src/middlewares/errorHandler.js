@@ -47,13 +47,22 @@ function errorHandler(err, req, res, next) {
     });
   }
 
+  if (err?.name === 'MulterError') {
+    const mensaje =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'El archivo supera el tamaño máximo permitido de 5 MB.'
+        : 'No se pudo procesar el archivo adjunto.';
+    return res.status(400).json({
+      error: 'UPLOAD_ERROR',
+      message: mensaje,
+    });
+  }
+
   console.error('[Error 500 Inesperado]:', err);
 
-  const isProd = process.env.NODE_ENV === 'production';
   return res.status(500).json({
     error: 'INTERNAL_ERROR',
-    message: isProd ? 'Ocurrió un inconveniente interno en el servidor.' : err.message,
-    ...(process.env.NODE_ENV === 'production' ? {} : { stack: err.stack }),
+    message: 'Ocurrió un inconveniente interno en el servidor.',
   });
 }
 

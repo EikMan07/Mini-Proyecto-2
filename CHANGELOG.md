@@ -16,6 +16,14 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **portal:** integra RRHH, RAG CR y ausencias
+  Motivo: conectar de extremo a extremo el portal React con PostgreSQL y Express, completar la base normativa laboral de Costa Rica para el RAG multiagente y habilitar trazabilidad operativa en RRHH.
+  
+  Cambios principales:
+  - Backend y PostgreSQL (Sequelize v6): migraciones reversibles 20261118000004 a 20261119000007, directorio paginado de 260 colaboradores (/api/hr/workers), carga segura de justificantes (/api/documents), validacion Zod de motivo de rechazo obligatorio, proteccion de traslapes/fechas en solicitudes y filtrado estricto de partes thought en llmService.js.
+  - Documentos RAG CR (documentos_drive/nuevas_politicas/): generador de las 6 politicas faltantes (permisos y duelo, guia de justificaciones en 48 h, jornada/teletrabajo, beneficios, desempeno y acoso) indexadas con gemini-embedding-001 y reemplazo automatico al sincronizar Google Drive.
+  - Frontend React (TicoSoft S.A.): nueva identidad visual SVG (BrandLogo.jsx y favicon.svg), vista dedicada /rrhh/trabajadores con buscador y filtros en AttendanceMonitor.jsx, apartado Justificar ausencia, modal anti-recorte de motivo de rechazo en RequestReviewPanel.jsx, renderizado Markdown limpio en ChatBox.jsx y 7 suites Jest (12 pruebas) junto al build Vite.
+
 - **backend:** implementa API RRHH con RAG Gemini
   Implementa de principio a fin el backend del Portal de Consulta de Politicas de RRHH con RAG Multiagente para TicoSoft S.A. en backend/ junto con las 5 politicas laborales de Costa Rica en documentos_drive/eiker/.
   
