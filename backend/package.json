@@ -1,7 +1,7 @@
 {
   "name": "mini-proyecto-2-backend",
   "version": "1.0.0",
-  "description": "Backend Node.js + Express + Sequelize v6 + PostgreSQL para el Portal de Consulta de Politicas de RRHH con RAG Multiagente",
+  "description": "Backend Node.js + Express + Sequelize v6 + MySQL para el Portal de Consulta de Politicas de RRHH con RAG Multiagente",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -25,10 +25,9 @@
     "jsonwebtoken": "^9.0.2",
     "mammoth": "^1.8.0",
     "morgan": "^1.10.0",
+    "mysql2": "^3.24.6",
     "node-cron": "^3.0.3",
     "pdf-parse": "^1.1.1",
-    "pg": "^8.13.3",
-    "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.5",
     "xlsx": "^0.18.5",
     "zod": "^3.24.2"

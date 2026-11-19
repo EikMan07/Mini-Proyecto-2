@@ -16,6 +16,9 @@ y este proyecto se adhiere a [Conventional Commits](https://www.conventionalcomm
 
 
 ### Added
+- **backend:** adapta persistencia a mysql
+  Migra Sequelize y migraciones desde PostgreSQL a MySQL con mysql2, JSON y configuración compatible con Windows.
+
 - **register:** activa ubicacion exacta
   Añade acción de geolocalización y relleno de dirección en el registro.
 

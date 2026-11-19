@@ -13,7 +13,7 @@ const bcrypt = require('bcryptjs');
  * - 36 movimientos de personal de últimos 3 meses
  * - 45 logs iniciales en consultas_chat (incluyendo 4 escaladas/no resueltas)
  * - 1 reporte diario inicial en reportes_diarios
- * - Sincronización de secuencias PostgreSQL
+ * - IDs autoincrementales gestionados por MySQL/Sequelize
  */
 
 function formatoFecha(date) {
@@ -38,7 +38,7 @@ function proximoViernes(baseDate) {
 module.exports = {
   async up(queryInterface) {
     const [existingRows] = await queryInterface.sequelize.query(
-      'SELECT COUNT(*)::int AS total FROM colaboradores;'
+      'SELECT COUNT(*) AS total FROM colaboradores;'
     );
     if (existingRows[0] && existingRows[0].total >= 250) {
       return;
@@ -709,23 +709,7 @@ module.exports = {
       },
     ]);
 
-    // 10. Sincronizar secuencias PostgreSQL
-    const queriesSecuencia = [
-      "SELECT setval(pg_get_serial_sequence('departamentos', 'id'), COALESCE((SELECT MAX(id) FROM departamentos), 1));",
-      "SELECT setval(pg_get_serial_sequence('colaboradores', 'id'), COALESCE((SELECT MAX(id) FROM colaboradores), 1));",
-      "SELECT setval(pg_get_serial_sequence('saldos_vacaciones', 'id'), COALESCE((SELECT MAX(id) FROM saldos_vacaciones), 1));",
-      "SELECT setval(pg_get_serial_sequence('solicitudes', 'id'), COALESCE((SELECT MAX(id) FROM solicitudes), 1));",
-      "SELECT setval(pg_get_serial_sequence('incapacidades', 'id'), COALESCE((SELECT MAX(id) FROM incapacidades), 1));",
-      "SELECT setval(pg_get_serial_sequence('asistencias', 'id'), COALESCE((SELECT MAX(id) FROM asistencias), 1));",
-      "SELECT setval(pg_get_serial_sequence('movimientos_personal', 'id'), COALESCE((SELECT MAX(id) FROM movimientos_personal), 1));",
-      "SELECT setval(pg_get_serial_sequence('fragmentos_documento', 'id'), COALESCE((SELECT MAX(id) FROM fragmentos_documento), 1));",
-      "SELECT setval(pg_get_serial_sequence('consultas_chat', 'id'), COALESCE((SELECT MAX(id) FROM consultas_chat), 1));",
-      "SELECT setval(pg_get_serial_sequence('reportes_diarios', 'id'), COALESCE((SELECT MAX(id) FROM reportes_diarios), 1));",
-    ];
-
-    for (const sql of queriesSecuencia) {
-      await queryInterface.sequelize.query(sql);
-    }
+    // MySQL mantiene automáticamente el siguiente valor de AUTO_INCREMENT.
   },
 
   async down(queryInterface) {

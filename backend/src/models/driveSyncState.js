@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       archivos_activos: {
-        type: DataTypes.JSONB,
+        type: DataTypes.JSON,
         allowNull: false,
         defaultValue: {},
       },

@@ -1,7 +1,7 @@
 # Mini-Proyecto-2 — Portal de Consulta de Políticas RRHH con RAG Multiagente (`TicoSoft S.A.`)
 
 ## Descripción
-Plataforma de Recursos Humanos para **TicoSoft S.A.** (250 colaboradores en Costa Rica) con arquitectura multiagente basada en **Node.js, Express, Sequelize v6, PostgreSQL, Google Drive API y Gemini (`@google/generative-ai`)**.
+Plataforma de Recursos Humanos para **TicoSoft S.A.** (250 colaboradores en Costa Rica) con arquitectura multiagente basada en **Node.js, Express, Sequelize v6, MySQL, Google Drive API y Gemini (`@google/generative-ai`)**.
 
 ## Estructura Actual
 - `backend/`: API REST, migraciones 3FN, seeder de 250 colaboradores, ingesta documental Drive/local, 5 agentes (`orchestrator`, `policyAgent`, `dataAgent`, `analystAgent`, `validatorAgent`), crones diarios (06:45 y 07:00) y evaluador de 45 preguntas. Consulta [backend/README.md](./backend/README.md) para la guía técnica detallada.
@@ -13,7 +13,7 @@ Plataforma de Recursos Humanos para **TicoSoft S.A.** (250 colaboradores en Cost
 ```bash
 cd backend
 npm install
-cp .env.example .env   # Configurar DB_PASSWORD y GEMINI_API_KEY
+cp .env.example .env   # Configurar MySQL y GEMINI_API_KEY
 npx sequelize-cli db:create
 npx sequelize-cli db:migrate
 npx sequelize-cli db:seed:all

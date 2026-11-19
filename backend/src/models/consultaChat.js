@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       documentos_citados: {
-        type: DataTypes.JSONB,
+        type: DataTypes.JSON,
         allowNull: false,
         defaultValue: [],
       },

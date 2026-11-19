@@ -982,3 +982,79 @@ Correcto: la rama local activa `feature-kendall` está siguiendo exactamente a `
 La rama remota `origin/feature-kendall` existe y el repositorio quedó cambiado a la rama local `feature-kendall`, enlazada con su rama remota. También se registró esta acción en `bitacora_agente.md`.
 
 ---
+
+## [Entrada #41]
+**Indicación / Tarea:**
+> Simular las solicitudes de vacaciones y el envío de comprobantes como usuario, ejecutar pruebas y recomendar mejoras para profesionalizar el proceso.
+
+### 1. Archivos Afectados
+- `frontend/src/mocks/apiMock.test.js` (Creado)
+- `bitacora_agente.md` (Modificado)
+
+### 2. Resumen de Acciones Técnicas
+- Se agregaron pruebas de flujo para solicitud de vacaciones pendiente → revisión de RR. HH. → descuento de saldo, y para envío de comprobante → aparición en el reporte demo.
+- Las pruebas dirigidas finalizaron correctamente: 3 suites, 6 pruebas.
+- El build de Vite finalizó correctamente; reportó un bundle JavaScript de 930.22 kB, por encima del umbral de 500 kB.
+- El conjunto completo de Jest ejecutó 8 pruebas y pasó 5 de 6 suites. `AuthContext.test.jsx` no pudo cargar por un problema existente de transformación ESM de `services/api.js`.
+- Se revisaron las rutas y contratos frontend/backend. No se ejecutó una prueba de integración con PostgreSQL; el backend no define un script de pruebas.
+
+### 3. Respuesta Completa del Agente
+Simulé el flujo en **modo demo** (persistencia local), sin crear solicitudes ni cargar documentos reales. Añadí pruebas en [apiMock.test.js](./frontend/src/mocks/apiMock.test.js):
+
+- Vacaciones: la solicitud queda pendiente sin bajar el saldo; aparece en la bandeja demo de RR. HH.; al aprobarla, el saldo baja exactamente los días solicitados.
+- Comprobante: el envío queda registrado y aparece en los comprobantes del reporte demo.
+
+**Resultados**
+- Pruebas dirigidas: **3 suites y 6 pruebas aprobadas**.
+- Build: **correcto**. Vite advierte que el bundle principal mide 930.22 kB minificado.
+- Suite completa: **8 pruebas aprobadas**, pero una suite no pudo cargar porque Jest intenta importar `services/api.js` como CommonJS aunque es ESM. Es un bloqueo de configuración preexistente.
+- El backend no se probó contra una base real; su `package.json` no define un script de pruebas.
+
+**Mejoras prioritarias para producción**
+1. **Completar la integración real antes de habilitarla:** el frontend envía comprobantes a `POST /api/documents`, pero el backend no monta esa ruta; la solicitud terminaría en 404. Además, el backend devuelve reportes como `{ reporte, historialFechas }` y el dashboard espera `date`, `pending` y `documents` en la raíz, así que falta adaptar el contrato. El frontend tampoco configura `credentials: 'include'` ni envía el token CSRF que el backend requiere para mutaciones.
+2. **Guardar y revisar comprobantes de verdad:** el demo solo conserva metadatos, no un archivo que RR. HH. pueda abrir. Añadir almacenamiento privado, límites de tamaño y validación MIME en servidor, vista del archivo, estados (pendiente/aprobado/rechazado), motivo de rechazo y notificación al colaborador.
+3. **Evitar sobreaprobar vacaciones:** las solicitudes pendientes no reservan saldo; dos solicitudes que individualmente caben podrían excederlo al aprobarse. Mantener el saldo visible sin descontarlo, pero mostrar por separado los días pendientes y validar el total antes de aprobar.
+4. **Acordar el cálculo legal de días:** el formulario y el backend cuentan días calendario inclusivos, incluidos fines de semana. Confirmar si el saldo usa días naturales o hábiles y considerar feriados de Costa Rica de forma consistente en ambas capas.
+5. **Profesionalizar el seguimiento:** actualizar la bandeja de RR. HH. cuando el colaborador envía algo desde otra pestaña, y reemplazar fechas demo antiguas de 2025 por datos y periodos actuales.
+
+Como siguiente paso de calidad, agregar pruebas de integración del contrato real frontend/backend y casos de rechazo, saldo insuficiente, doble aprobación, archivo inválido/grande y fallo de carga.
+
+---
+
+## [Entrada #32]
+**Indicación / Tarea:**
+> Clona todo este repositorio, cambia la base de datos por MySQL y adáptalo a las herramientas de mi computadora.
+
+### 1. Archivos Afectados
+- `backend/package.json`
+- `backend/package-lock.json`
+- `backend/.env.example`
+- `backend/src/config/config.js`
+- `backend/src/models/index.js`
+- `backend/src/models/consultaChat.js`
+- `backend/src/models/driveSyncState.js`
+- `backend/src/models/fragmentoDocumento.js`
+- `backend/src/models/reporteDiario.js`
+- `backend/src/migrations/20261117000001-create-esquema-rrhh-3fn.js`
+- `backend/src/migrations/20261118000002-create-drive-sync-state.js`
+- `backend/src/seeders/20261117000100-seed-rrhh-250.js`
+- `backend/src/index.js`
+- `backend/src/app.js`
+- `backend/src/prompts/analystAgent.md`
+- `backend/README.md`
+- `README.md`
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones Técnicas
+- Se mantuvo el repositorio completo en la rama `feature-kendall` y se revisó la estructura de backend y frontend.
+- Se cambió Sequelize de PostgreSQL a MySQL con `mysql2`, puerto predeterminado `3306`, codificación `utf8mb4` y usuario local `root` como valor de ejemplo.
+- Se reemplazaron los tipos `JSONB` por `JSON` compatibles con MySQL.
+- Se retiraron la extensión `pgvector`, los casteos `::int` y la sincronización de secuencias `setval/pg_get_serial_sequence` del seeder.
+- Se actualizaron variables de entorno y documentación para Windows/MySQL.
+- Se verificó `mysql2` instalado localmente, sintaxis de todos los archivos JavaScript y consistencia con `npm ci --dry-run --offline`.
+- El servicio local `MySQL2610` está ejecutándose en `3306`, pero la autenticación con `root` fue rechazada (`ER_ACCESS_DENIED_ERROR`); la contraseña debe configurarse en el `.env` local y no se sube al repositorio.
+
+### 3. Respuesta Completa del Agente
+El proyecto quedó adaptado a MySQL y listo para ejecutarse en la computadora. Solo falta colocar las credenciales reales de MySQL en `backend/.env`, crear `rrhh_rag_db` si el usuario no puede hacerlo automáticamente y ejecutar las migraciones/seeder.
+
+---

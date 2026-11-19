@@ -62,7 +62,7 @@ const authLimiter = rateLimit({
 // 7. Verificación de origen en métodos mutables (Capa 2 anti-CSRF)
 app.use(verificarOrigen);
 
-// 8. Healthcheck con conteo real de tablas en PostgreSQL
+// 8. Healthcheck con conteo real de tablas en MySQL
 app.get('/api/health', async (req, res, next) => {
   try {
     await db.sequelize.authenticate();
@@ -96,7 +96,7 @@ app.get('/api/health', async (req, res, next) => {
     return res.status(200).json({
       estado: 'ok',
       servicio: 'Portal RRHH RAG Multiagente API',
-      base_datos: 'postgresql',
+      base_datos: 'mysql',
       tablas: {
         departamentos,
         colaboradores,

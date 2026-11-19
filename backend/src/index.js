@@ -11,7 +11,7 @@ const PUERTO = Number(process.env.PUERTO || process.env.PORT || 5000);
 sequelize
   .authenticate()
   .then(() => {
-    console.log('Conexión exitosa a PostgreSQL con Sequelize');
+    console.log('Conexión exitosa a MySQL con Sequelize');
     if (process.env.NODE_ENV !== 'test') {
       iniciarCronIngesta();
       iniciarCronReporteDiario();
@@ -22,6 +22,6 @@ sequelize
     });
   })
   .catch((err) => {
-    console.error('Error crítico al conectar con PostgreSQL:', err.message);
+    console.error('Error crítico al conectar con MySQL:', err.message);
     process.exit(1);
   });

@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       datos_json: {
-        type: DataTypes.JSONB,
+        type: DataTypes.JSON,
         allowNull: false,
       },
       resumen_texto: {

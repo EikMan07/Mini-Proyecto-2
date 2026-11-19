@@ -1,10 +1,10 @@
 # Backend - Portal de Consulta de Políticas RRHH con RAG Multiagente (`TicoSoft S.A.`)
 
-API REST construida con **Node.js, Express, Sequelize v6, PostgreSQL, Google Drive API y Gemini (`@google/generative-ai`)**.
+API REST construida con **Node.js, Express, Sequelize v6, MySQL, Google Drive API y Gemini (`@google/generative-ai`)**.
 
 ## Requisitos Previos
 - Node.js 20+ (probado en Node 24)
-- PostgreSQL 16+ / 18 ejecutándose localmente
+- MySQL 8+ ejecutándose localmente (puerto `3306`)
 - API Key de Google Gemini (`GEMINI_API_KEY`)
 - Cuenta de servicio de Google Cloud con acceso de lectura a la carpeta de políticas en Google Drive (`backend/credenciales/*.json`)
 
@@ -18,6 +18,7 @@ API REST construida con **Node.js, Express, Sequelize v6, PostgreSQL, Google Dri
    ```bash
    cp .env.example .env
    ```
+   En Windows PowerShell también puedes usar `Copy-Item .env.example .env`. Luego coloca en `DB_USER` y `DB_PASSWORD` las credenciales de tu instalación local de MySQL.
    Variables principales:
    - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
    - `JWT_SECRET`, `CSRF_SECRET` (cadenas hexadecimales aleatorias de 64+ caracteres)
@@ -29,13 +30,14 @@ API REST construida con **Node.js, Express, Sequelize v6, PostgreSQL, Google Dri
    - `GOOGLE_DRIVE_FOLDER_ID=1VMAZXbU6n86EEFWOa6ANFVqxDxscDK3O`
    - `GOOGLE_APPLICATION_CREDENTIALS=./credenciales/miniproyecto-515114-b12d28da88e8.json`
 
-## Base de Datos (Migraciones y Seeder de 250 Colaboradores)
+## Base de Datos MySQL (Migraciones y Seeder de 250 Colaboradores)
 Todo el esquema relacional en **3FN** se gestiona únicamente mediante migraciones de Sequelize:
 ```bash
 npx sequelize-cli db:create
 npx sequelize-cli db:migrate
-npx sequelize-cli db:seed:all
-```
+   npx sequelize-cli db:seed:all
+   ```
+Si tu usuario no tiene permiso para crear bases de datos, crea `rrhh_rag_db` desde MySQL Workbench o ejecuta `CREATE DATABASE rrhh_rag_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;` y continúa con `db:migrate`.
 
 ### Cuentas Demo del Seed (Contraseña común: `DemoRRHH2026!`)
 - **RRHH:** `ana.solis@ticosoft.cr`, `carlos.mora@ticosoft.cr`

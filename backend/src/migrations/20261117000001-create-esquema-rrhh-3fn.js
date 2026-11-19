@@ -3,12 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Soporte tolerante para pgvector si está disponible en la instancia local de PostgreSQL
-    try {
-      await queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS vector;');
-    } catch {
-      // pgvector no disponible en Windows local; se utilizará embedding_json (JSONB) + similitud coseno en Node.js
-    }
+    // MySQL almacena los embeddings como JSON; la similitud coseno se calcula en Node.js.
 
     // 1. departamentos
     await queryInterface.createTable('departamentos', {
@@ -484,7 +479,7 @@ module.exports = {
         allowNull: false,
       },
       embedding_json: {
-        type: Sequelize.JSONB,
+        type: Sequelize.JSON,
         allowNull: false,
       },
       hash_archivo: {
@@ -544,7 +539,7 @@ module.exports = {
         allowNull: false,
       },
       documentos_citados: {
-        type: Sequelize.JSONB,
+        type: Sequelize.JSON,
         allowNull: false,
         defaultValue: [],
       },
@@ -601,7 +596,7 @@ module.exports = {
         unique: true,
       },
       datos_json: {
-        type: Sequelize.JSONB,
+        type: Sequelize.JSON,
         allowNull: false,
       },
       resumen_texto: {

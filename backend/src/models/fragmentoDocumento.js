@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       embedding_json: {
-        type: DataTypes.JSONB,
+        type: DataTypes.JSON,
         allowNull: false,
       },
       hash_archivo: {

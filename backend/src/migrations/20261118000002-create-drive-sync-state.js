@@ -24,7 +24,7 @@ module.exports = {
         allowNull: true,
       },
       archivos_activos: {
-        type: Sequelize.JSONB,
+        type: Sequelize.JSON,
         allowNull: false,
         defaultValue: {},
       },
