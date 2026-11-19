@@ -2,6 +2,17 @@
 
 const { z } = require('zod');
 
+function fechaActualCostaRica() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Costa_Rica',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 const chatSchema = z.object({
   pregunta: z
     .string({ required_error: 'La pregunta es obligatoria' })
@@ -39,6 +50,10 @@ const crearSolicitudSchema = z
   .refine((data) => data.fecha_fin >= data.fecha_inicio, {
     message: 'fecha_fin debe ser igual o posterior a fecha_inicio',
     path: ['fecha_fin'],
+  })
+  .refine((data) => data.fecha_inicio >= fechaActualCostaRica(), {
+    message: 'No se pueden solicitar días libres en fechas que ya pasaron',
+    path: ['fecha_inicio'],
   });
 
 const resolverSolicitudSchema = z.object({

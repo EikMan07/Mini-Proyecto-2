@@ -9,6 +9,7 @@ import { api } from '../../services/api';
 import { dashboardItemVariants, dashboardVariants, springSoft } from '../../lib/motion';
 import RightsCenter from '../../components/RightsCenter/RightsCenter';
 import WorkCalendar from '../../components/WorkCalendar/WorkCalendar';
+import { getVacationBalance } from '../../services/workflowService';
 
 export default function EmployeePortalPage() {
   const [summary, setSummary] = useState(null);
@@ -22,12 +23,28 @@ export default function EmployeePortalPage() {
     api.getEmployeeSummary().then(setSummary).catch(() => setError('No pudimos cargar tu resumen. Intenta nuevamente.')).finally(() => setIsLoading(false));
   };
 
-  useEffect(() => { loadSummary(); }, []);
+  useEffect(() => {
+    loadSummary();
+    const refreshSummary = () => loadSummary();
+    const handleStorage = (event) => {
+      if (!event.key || event.key.includes('ticosoft-demo-')) refreshSummary();
+    };
+    window.addEventListener('focus', refreshSummary);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('focus', refreshSummary);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
 
   if (!summary && (isLoading || error)) return <div className="route-loader"><p>{isLoading ? 'Cargando tu espacio…' : error}</p>{error && <button className="button secondary" onClick={loadSummary}>Reintentar</button>}</div>;
 
   const addRequest = (request) => {
-    setSummary((current) => ({ ...current, requests: [request, ...current.requests] }));
+    setSummary((current) => ({
+      ...current,
+      vacationBalance: request.type === 'Vacaciones' ? getVacationBalance() : current.vacationBalance,
+      requests: [request, ...current.requests],
+    }));
     setIsModalOpen(false);
   };
 
@@ -51,7 +68,7 @@ export default function EmployeePortalPage() {
             <WorkCalendar />
             <motion.section className="balance-card" layout transition={springSoft} whileHover={{ y: -3 }}>
               <p className="eyebrow">Saldo disponible</p>
-              <strong>{summary.vacationBalance}<small> días</small></strong>
+              <strong>{Math.floor(Number(summary.vacationBalance) || 0)}<small> días</small></strong>
               <p>de vacaciones para usar este año</p>
               <button className="text-button" onClick={() => setIsModalOpen(true)}>Solicitar días →</button>
             </motion.section>
@@ -70,7 +87,15 @@ export default function EmployeePortalPage() {
                     transition={springSoft}
                     whileHover={{ x: 4 }}
                   >
-                    <div><strong>{request.type}</strong><p>{request.dates} · {request.createdAt}</p></div>
+                    <div>
+                      <strong>{request.type}</strong>
+                      <p>{request.dates} · {request.createdAt}</p>
+                      {request.type === 'Vacaciones' && request.status === 'Aprobada' && (
+                        <p className="request-confirmation">
+                          Vacaciones aprobadas: se descontaron {request.days} {request.days === 1 ? 'día' : 'días'} de tu saldo.
+                        </p>
+                      )}
+                    </div>
                     <StatusBadge tone={request.status === 'Aprobada' ? 'success' : 'warning'}>{request.status}</StatusBadge>
                   </motion.div>
                 ))}
@@ -82,7 +107,7 @@ export default function EmployeePortalPage() {
       </LayoutGroup>
       <div className="employee-resource-grid"><RightsCenter /></div>
 
-      {isModalOpen && <LeaveRequestModal onClose={() => setIsModalOpen(false)} onCreated={addRequest} />}
+      {isModalOpen && <LeaveRequestModal onClose={() => setIsModalOpen(false)} onCreated={addRequest} vacationBalance={summary.vacationBalance} />}
     </AppShell>
   );
 }
