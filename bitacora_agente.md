@@ -1058,3 +1058,20 @@ Como siguiente paso de calidad, agregar pruebas de integración del contrato rea
 El proyecto quedó adaptado a MySQL y listo para ejecutarse en la computadora. Solo falta colocar las credenciales reales de MySQL en `backend/.env`, crear `rrhh_rag_db` si el usuario no puede hacerlo automáticamente y ejecutar las migraciones/seeder.
 
 ---
+
+## [Entrada #33]
+**Indicación / Tarea:**
+> Dame el local de la página funcional.
+
+### 1. Archivos Afectados
+- Ninguno; se inició el servidor de desarrollo del frontend.
+- `bitacora_agente.md`
+
+### 2. Resumen de Acciones Técnicas
+- Se levantó Vite desde `frontend/` usando el host local `127.0.0.1`.
+- Se comprobó respuesta HTTP 200 en el puerto `5173`.
+
+### 3. Respuesta Completa del Agente
+La página funcional está disponible en `http://localhost:5173`.
+
+---
